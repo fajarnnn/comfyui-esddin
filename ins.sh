@@ -119,7 +119,7 @@ for url in "${CUSTOM_NODES[@]}"; do
 
   log "Done: $name"
 done
-hf auth login --token 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
+hf auth login --token "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"
 hf download Esddin/venv "ava+logos-l14-linearMSE.pth" --local-dir /workspace/runpod-slim/ComfyUI/models/aesthetic
 hf download Esddin/venv "ava+logos-l14-reluMSE.pth" --local-dir /workspace/runpod-slim/ComfyUI/models/aesthetic
 hf download Esddin/venv "sac+logos+ava1-l14-linearMSE.pth" --local-dir /workspace/runpod-slim/ComfyUI/models/aesthetic
