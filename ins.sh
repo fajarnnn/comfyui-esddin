@@ -28,6 +28,8 @@ CUSTOM_NODES=(
   "https://github.com/jags111/efficiency-nodes-comfyui"
   "https://github.com/icekiub-ai/ComfyUI-IcyHider"
   "https://github.com/cubiq/ComfyUI_essentials"
+  "https://github.com/ltdrdata/ComfyUI-Impact-Pack"
+  "https://github.com/Curt-Park/human-parser-comfyui-node-in-pure-python"
 )
 
 # =======================
@@ -124,6 +126,9 @@ hf download Esddin/venv "ava+logos-l14-linearMSE.pth" --local-dir /workspace/run
 hf download Esddin/venv "ava+logos-l14-reluMSE.pth" --local-dir /workspace/runpod-slim/ComfyUI/models/aesthetic
 hf download Esddin/venv "sac+logos+ava1-l14-linearMSE.pth" --local-dir /workspace/runpod-slim/ComfyUI/models/aesthetic
 hf download Esddin/venv "chadscorer.pth" --local-dir /workspace/runpod-slim/ComfyUI/models/aesthetic
+mkdir -p /workspace/runpod-slim/ComfyUI/models/schp
+wget -O /workspace/runpod-slim/ComfyUI/models/schp/exp-schp-201908270938-pascal-person-part.pth "https://huggingface.co/alexgenovese/controlnet/resolve/dde0b026ee9fbcb7cb8c262bfffa94dc00c87c69/exp-schp-201908270938-pascal-person-part.pth"
+
 rm -rf /workspace/runpod-slim/ComfyUI/custom_nodes/nodes
 git clone https://Esddin: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@huggingface.co/datasets/Esddin/nodes --branch master /workspace/runpod-slim/ComfyUI/custom_nodes/nodes
 pip install aesthetic-predictor-v2-5
