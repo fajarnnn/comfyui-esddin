@@ -2,8 +2,8 @@
 set -euo pipefail
 
 SUBJECT="$3"
-HF_TOKEN="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"
-HF_TOKE_APP="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"
+HF_TOKEN="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"
+HF_TOKE_APP="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"
 MAIN_OUT="/workspace/runpod-slim/ComfyUI/output"
 DST_PATH="/workspace/runpod-slim/${SUBJECT}"
 

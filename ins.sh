@@ -121,16 +121,15 @@ for url in "${CUSTOM_NODES[@]}"; do
 
   log "Done: $name"
 done
-hf auth login --token "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"
+hf auth login --token "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"
 hf download Esddin/venv "ava+logos-l14-linearMSE.pth" --local-dir /workspace/runpod-slim/ComfyUI/models/aesthetic
 hf download Esddin/venv "ava+logos-l14-reluMSE.pth" --local-dir /workspace/runpod-slim/ComfyUI/models/aesthetic
 hf download Esddin/venv "sac+logos+ava1-l14-linearMSE.pth" --local-dir /workspace/runpod-slim/ComfyUI/models/aesthetic
 hf download Esddin/venv "chadscorer.pth" --local-dir /workspace/runpod-slim/ComfyUI/models/aesthetic
 mkdir -p /workspace/runpod-slim/ComfyUI/models/schp
 wget -O /workspace/runpod-slim/ComfyUI/models/schp/exp-schp-201908270938-pascal-person-part.pth "https://huggingface.co/alexgenovese/controlnet/resolve/dde0b026ee9fbcb7cb8c262bfffa94dc00c87c69/exp-schp-201908270938-pascal-person-part.pth"
-
 rm -rf /workspace/runpod-slim/ComfyUI/custom_nodes/nodes
-git clone https://Esddin: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@huggingface.co/datasets/Esddin/nodes --branch master /workspace/runpod-slim/ComfyUI/custom_nodes/nodes
+git clone https://Esddin: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@huggingface.co/datasets/Esddin/nodes --branch master /workspace/runpod-slim/ComfyUI/custom_nodes/nodes
 pip install aesthetic-predictor-v2-5
 pip install git+https://github.com/openai/CLIP.git
 pip install pytorch_lightning
