@@ -1,0 +1,1066 @@
+{
+  "prompt": {
+    "37": {
+      "inputs": {
+        "preview": "keep her facial features identical,undress her clothes, make her nude.\nvery slim, sexy and athletic body with medium sagging breasts, natural white skin and slightly hairy pussy. The skin are very detailed,all else remains calm and unchanged",
+        "previewMode": null,
+        "source": [
+          "36:34",
+          0
+        ]
+      },
+      "class_type": "PreviewAny",
+      "_meta": {
+        "title": "Preview as Text"
+      }
+    },
+    "41": {
+      "inputs": {
+        "images": [
+          "73",
+          0
+        ]
+      },
+      "class_type": "PreviewImage",
+      "_meta": {
+        "title": "Scaled Image"
+      }
+    },
+    "71": {
+      "inputs": {
+        "pixels": [
+          "73",
+          0
+        ],
+        "vae": [
+          "86",
+          2
+        ]
+      },
+      "class_type": "VAEEncode",
+      "_meta": {
+        "title": "VAE Encode"
+      }
+    },
+    "73": {
+      "inputs": {
+        "upscale_method": "lanczos",
+        "scale_by": [
+          "238:238",
+          0
+        ],
+        "image": [
+          "243",
+          0
+        ]
+      },
+      "class_type": "ImageScaleBy",
+      "_meta": {
+        "title": "Upscale Image By"
+      }
+    },
+    "86": {
+      "inputs": {
+        "ckpt_name": "Qwen-Rapid-AIO-NSFW-v23.safetensors"
+      },
+      "class_type": "CheckpointLoaderSimple",
+      "_meta": {
+        "title": "Load Checkpoint"
+      }
+    },
+    "149": {
+      "inputs": {
+        "images": [
+          "93:140",
+          0
+        ]
+      },
+      "class_type": "IcyPreviewImage",
+      "_meta": {
+        "title": "Icy PreviewImage"
+      }
+    },
+    "243": {
+      "inputs": {
+        "directory_path": "input/raw/ka_young2000/ka_young2000_003",
+        "file_extension": "ALL",
+        "reset_index": true,
+        "sort_method": "alphabetical",
+        "reload_directory": true,
+        "read_caption": false,
+        "starting_index": [
+          "551",
+          0
+        ]
+      },
+      "class_type": "WWAA_ImageLoader",
+      "_meta": {
+        "title": "🪠️ WWAA Image Batch Loader"
+      }
+    },
+    "489": {
+      "inputs": {
+        "value": "ka_young2000_3"
+      },
+      "class_type": "easy string",
+      "_meta": {
+        "title": "String"
+      }
+    },
+    "497": {
+      "inputs": {
+        "prefix": "TOTAL_IMAGE:",
+        "value": [
+          "243",
+          2
+        ]
+      },
+      "class_type": "ConsoleDebug+",
+      "_meta": {
+        "title": "🔧 Console Debug"
+      }
+    },
+    "498": {
+      "inputs": {
+        "prefix": "CURRENT_IDX:",
+        "value": [
+          "551",
+          0
+        ]
+      },
+      "class_type": "ConsoleDebug+",
+      "_meta": {
+        "title": "🔧 Console Debug"
+      }
+    },
+    "499": {
+      "inputs": {
+        "prefix": "LAST_IDX:",
+        "value": [
+          "550",
+          0
+        ]
+      },
+      "class_type": "ConsoleDebug+",
+      "_meta": {
+        "title": "🔧 Console Debug"
+      }
+    },
+    "501": {
+      "inputs": {
+        "value": "ka_young2000"
+      },
+      "class_type": "easy string",
+      "_meta": {
+        "title": "SUBJECT"
+      }
+    },
+    "504": {
+      "inputs": {
+        "value": "qwen"
+      },
+      "class_type": "easy string",
+      "_meta": {
+        "title": "QWEN-EDIT"
+      }
+    },
+    "505": {
+      "inputs": {
+        "value": "detailing"
+      },
+      "class_type": "easy string",
+      "_meta": {
+        "title": "DETAILING"
+      }
+    },
+    "506": {
+      "inputs": {
+        "value": "BEST"
+      },
+      "class_type": "easy string",
+      "_meta": {
+        "title": "BEST"
+      }
+    },
+    "507": {
+      "inputs": {
+        "value": "OVERALL"
+      },
+      "class_type": "easy string",
+      "_meta": {
+        "title": "OVERALL"
+      }
+    },
+    "544": {
+      "inputs": {
+        "prefix": "SCALED BY:",
+        "value": [
+          "238:238",
+          0
+        ]
+      },
+      "class_type": "ConsoleDebug+",
+      "_meta": {
+        "title": "🔧 Console Debug"
+      }
+    },
+    "546": {
+      "inputs": {
+        "value": "300000"
+      },
+      "class_type": "easy string",
+      "_meta": {
+        "title": "PREFIX_NUM"
+      }
+    },
+    "548": {
+      "inputs": {
+        "file_path": [
+          "549",
+          0
+        ]
+      },
+      "class_type": "LoadTextFileOrZero",
+      "_meta": {
+        "title": "LoadTextFileOrZero"
+      }
+    },
+    "549": {
+      "inputs": {
+        "pre_text": "/workspace/runpod-slim/ComfyUI/input/",
+        "post_text": "idx.txt",
+        "input_text": [
+          "489",
+          0
+        ]
+      },
+      "class_type": "WWAA_BuildString",
+      "_meta": {
+        "title": "🪠️ WWAA JoinString"
+      }
+    },
+    "550": {
+      "inputs": {
+        "output_type": "int",
+        "*": [
+          "548",
+          0
+        ]
+      },
+      "class_type": "easy convertAnything",
+      "_meta": {
+        "title": "Convert Any"
+      }
+    },
+    "551": {
+      "inputs": {
+        "value": "a+1",
+        "a": [
+          "550",
+          0
+        ]
+      },
+      "class_type": "easy simpleMath",
+      "_meta": {
+        "title": "Simple Math"
+      }
+    },
+    "552": {
+      "inputs": {
+        "output_type": "string",
+        "*": [
+          "551",
+          0
+        ]
+      },
+      "class_type": "easy convertAnything",
+      "_meta": {
+        "title": "Convert Any"
+      }
+    },
+    "553": {
+      "inputs": {
+        "file_path": [
+          "549",
+          0
+        ],
+        "text": [
+          "552",
+          0
+        ],
+        "value": 0,
+        "operator": "=",
+        "comparer": 0,
+        "save_mode": "overwrite"
+      },
+      "class_type": "ConditionalSaveTextFile",
+      "_meta": {
+        "title": "ConditionalSaveTextFile"
+      }
+    },
+    "554": {
+      "inputs": {
+        "prefix": "ISIDXSAVED:",
+        "value": [
+          "553",
+          0
+        ]
+      },
+      "class_type": "ConsoleDebug+",
+      "_meta": {
+        "title": "🔧 Console Debug"
+      }
+    },
+    "555": {
+      "inputs": {
+        "text": "89",
+        "anything": [
+          "548",
+          0
+        ]
+      },
+      "class_type": "easy showAnything",
+      "_meta": {
+        "title": "Show Any"
+      }
+    },
+    "36:34": {
+      "inputs": {
+        "pre_text": [
+          "36:31",
+          0
+        ],
+        "post_text": [
+          "36:36",
+          0
+        ],
+        "input_text": [
+          "36:37",
+          0
+        ]
+      },
+      "class_type": "WWAA_BuildString",
+      "_meta": {
+        "title": "🪠️ WWAA JoinString"
+      }
+    },
+    "36:35": {
+      "inputs": {
+        "string_a": [
+          "36:32",
+          0
+        ],
+        "string_b": [
+          "36:33",
+          0
+        ],
+        "delimiter": ","
+      },
+      "class_type": "StringConcatenate",
+      "_meta": {
+        "title": "Concatenate"
+      }
+    },
+    "36:37": {
+      "inputs": {
+        "string_a": [
+          "36:30",
+          0
+        ],
+        "string_b": [
+          "36:35",
+          0
+        ],
+        "delimiter": ""
+      },
+      "class_type": "StringConcatenate",
+      "_meta": {
+        "title": "Concatenate"
+      }
+    },
+    "36:36": {
+      "inputs": {
+        "value": "all else remains calm and unchanged"
+      },
+      "class_type": "PrimitiveStringMultiline",
+      "_meta": {
+        "title": "Postfix"
+      }
+    },
+    "36:31": {
+      "inputs": {
+        "value": [
+          "36:38",
+          0
+        ]
+      },
+      "class_type": "PrimitiveStringMultiline",
+      "_meta": {
+        "title": "What to Keep"
+      }
+    },
+    "36:38": {
+      "inputs": {
+        "boolean": [
+          "36:40",
+          0
+        ],
+        "on_true": [
+          "36:44",
+          0
+        ],
+        "on_false": [
+          "36:43",
+          0
+        ]
+      },
+      "class_type": "Switch any [Crystools]",
+      "_meta": {
+        "title": "🪛 Switch any"
+      }
+    },
+    "36:30": {
+      "inputs": {
+        "value": [
+          "36:45",
+          0
+        ]
+      },
+      "class_type": "PrimitiveStringMultiline",
+      "_meta": {
+        "title": "MAIN"
+      }
+    },
+    "36:45": {
+      "inputs": {
+        "boolean": [
+          "36:40",
+          0
+        ],
+        "on_true": [
+          "36:46",
+          0
+        ],
+        "on_false": [
+          "36:47",
+          0
+        ]
+      },
+      "class_type": "Switch any [Crystools]",
+      "_meta": {
+        "title": "🪛 Switch any"
+      }
+    },
+    "36:47": {
+      "inputs": {
+        "value": "undress her clothes, make her nude.\nvery slim, sexy and athletic body with medium sagging breasts, natural white skin and slightly hairy pussy. The skin are very detailed"
+      },
+      "class_type": "PrimitiveStringMultiline",
+      "_meta": {
+        "title": "PR"
+      }
+    },
+    "36:40": {
+      "inputs": {
+        "string_a": "SOLO",
+        "string_b": "GROUP",
+        "mode": "Starts With",
+        "case_sensitive": true
+      },
+      "class_type": "StringCompare",
+      "_meta": {
+        "title": "Compare"
+      }
+    },
+    "36:46": {
+      "inputs": {
+        "value": "undress all females clothes, make them nude.\nvery slim, sexy and athletic body with medium sagging breasts, natural white skin and slightly hairy pussy. The skin are very detailed "
+      },
+      "class_type": "PrimitiveStringMultiline",
+      "_meta": {
+        "title": "PR_G"
+      }
+    },
+    "36:43": {
+      "inputs": {
+        "value": "keep her facial features identical,"
+      },
+      "class_type": "PrimitiveStringMultiline",
+      "_meta": {
+        "title": "KEEP"
+      }
+    },
+    "36:44": {
+      "inputs": {
+        "value": "keep all person facial features identical,"
+      },
+      "class_type": "PrimitiveStringMultiline",
+      "_meta": {
+        "title": "KEEP_G"
+      }
+    },
+    "36:32": {
+      "inputs": {
+        "value": ""
+      },
+      "class_type": "PrimitiveStringMultiline",
+      "_meta": {
+        "title": "Body Movement"
+      }
+    },
+    "36:33": {
+      "inputs": {
+        "value": ""
+      },
+      "class_type": "PrimitiveStringMultiline",
+      "_meta": {
+        "title": "Camera Angle"
+      }
+    },
+    "92:87": {
+      "inputs": {
+        "prompt": [
+          "36:34",
+          0
+        ],
+        "clip": [
+          "86",
+          1
+        ]
+      },
+      "class_type": "TextEncodeQwenImageEditPlus",
+      "_meta": {
+        "title": "TextEncodeQwenImageEditPlus"
+      }
+    },
+    "92:88": {
+      "inputs": {
+        "prompt": "Do NOT change the person's identity.\nDo NOT change the face, gender,hair, age, expression, or proportions unless asked.\nDo NOT make the person fat.\nDo NOT undress or remove her accessories.\nDo NOT undress or remove her headwear.\nDO NOT change or remove tattoos.\n\nDo NOT undress or remove her eyewear.",
+        "clip": [
+          "86",
+          1
+        ]
+      },
+      "class_type": "TextEncodeQwenImageEditPlus",
+      "_meta": {
+        "title": "TextEncodeQwenImageEditPlus"
+      }
+    },
+    "238:233": {
+      "inputs": {
+        "preview": "True",
+        "previewMode": null,
+        "source": [
+          "238:232",
+          0
+        ]
+      },
+      "class_type": "PreviewAny",
+      "_meta": {
+        "title": "Preview as Text"
+      }
+    },
+    "238:237": {
+      "inputs": {
+        "preview": "1800",
+        "previewMode": null,
+        "source": [
+          "238:234",
+          1
+        ]
+      },
+      "class_type": "PreviewAny",
+      "_meta": {
+        "title": "Preview as Text"
+      }
+    },
+    "238:231": {
+      "inputs": {
+        "boolean": [
+          "238:232",
+          0
+        ],
+        "on_true": [
+          "238:229",
+          0
+        ],
+        "on_false": [
+          "238:230",
+          0
+        ]
+      },
+      "class_type": "Switch any [Crystools]",
+      "_meta": {
+        "title": "🪛 Switch any"
+      }
+    },
+    "238:232": {
+      "inputs": {
+        "comparison": "a > b",
+        "a": [
+          "238:234",
+          1
+        ],
+        "b": [
+          "238:235",
+          0
+        ]
+      },
+      "class_type": "easy compare",
+      "_meta": {
+        "title": "Compare"
+      }
+    },
+    "238:234": {
+      "inputs": {
+        "image": [
+          "243",
+          0
+        ]
+      },
+      "class_type": "GetImageSize+",
+      "_meta": {
+        "title": "🔧 Get Image Size"
+      }
+    },
+    "238:235": {
+      "inputs": {
+        "value": 1600
+      },
+      "class_type": "INTConstant",
+      "_meta": {
+        "title": "INT Constant"
+      }
+    },
+    "238:240": {
+      "inputs": {
+        "comparison": "a < b",
+        "a": [
+          "238:234",
+          1
+        ],
+        "b": [
+          "238:241",
+          0
+        ]
+      },
+      "class_type": "easy compare",
+      "_meta": {
+        "title": "Compare"
+      }
+    },
+    "238:242": {
+      "inputs": {
+        "preview": "False",
+        "previewMode": null,
+        "source": [
+          "238:240",
+          0
+        ]
+      },
+      "class_type": "PreviewAny",
+      "_meta": {
+        "title": "Preview as Text"
+      }
+    },
+    "238:238": {
+      "inputs": {
+        "boolean": [
+          "238:240",
+          0
+        ],
+        "on_true": [
+          "238:239",
+          0
+        ],
+        "on_false": [
+          "238:231",
+          0
+        ]
+      },
+      "class_type": "Switch any [Crystools]",
+      "_meta": {
+        "title": "🪛 Switch any"
+      }
+    },
+    "238:241": {
+      "inputs": {
+        "value": 1400
+      },
+      "class_type": "INTConstant",
+      "_meta": {
+        "title": "INT Constant"
+      }
+    },
+    "238:236": {
+      "inputs": {
+        "preview": "1440",
+        "previewMode": null,
+        "source": [
+          "238:234",
+          0
+        ]
+      },
+      "class_type": "PreviewAny",
+      "_meta": {
+        "title": "Preview as Text"
+      }
+    },
+    "238:239": {
+      "inputs": {
+        "value": 0.7
+      },
+      "class_type": "FloatConstant",
+      "_meta": {
+        "title": "Float Constant"
+      }
+    },
+    "238:229": {
+      "inputs": {
+        "value": 0.55
+      },
+      "class_type": "FloatConstant",
+      "_meta": {
+        "title": "Float Constant"
+      }
+    },
+    "238:230": {
+      "inputs": {
+        "value": 0.6
+      },
+      "class_type": "FloatConstant",
+      "_meta": {
+        "title": "Float Constant"
+      }
+    },
+    "115:112": {
+      "inputs": {
+        "conditioning": [
+          "92:87",
+          0
+        ],
+        "latent": [
+          "71",
+          0
+        ]
+      },
+      "class_type": "ReferenceLatent",
+      "_meta": {
+        "title": "ReferenceLatent"
+      }
+    },
+    "115:111": {
+      "inputs": {
+        "conditioning": [
+          "115:113",
+          0
+        ]
+      },
+      "class_type": "ReferenceLatent",
+      "_meta": {
+        "title": "ReferenceLatent"
+      }
+    },
+    "115:114": {
+      "inputs": {
+        "conditioning": [
+          "115:112",
+          0
+        ]
+      },
+      "class_type": "ReferenceLatent",
+      "_meta": {
+        "title": "ReferenceLatent"
+      }
+    },
+    "115:109": {
+      "inputs": {
+        "conditioning": [
+          "115:114",
+          0
+        ]
+      },
+      "class_type": "ReferenceLatent",
+      "_meta": {
+        "title": "ReferenceLatent"
+      }
+    },
+    "115:113": {
+      "inputs": {
+        "conditioning": [
+          "92:88",
+          0
+        ],
+        "latent": [
+          "71",
+          0
+        ]
+      },
+      "class_type": "ReferenceLatent",
+      "_meta": {
+        "title": "ReferenceLatent"
+      }
+    },
+    "115:110": {
+      "inputs": {
+        "conditioning": [
+          "115:113",
+          0
+        ]
+      },
+      "class_type": "ReferenceLatent",
+      "_meta": {
+        "title": "ReferenceLatent"
+      }
+    },
+    "93:91": {
+      "inputs": {
+        "filename_prefix": [
+          "518:517",
+          0
+        ],
+        "images": [
+          "93:140",
+          0
+        ]
+      },
+      "class_type": "SaveImage",
+      "_meta": {
+        "title": "Save Image"
+      }
+    },
+    "93:117": {
+      "inputs": {
+        "preview": "ka_young2000_30000090_qwen",
+        "previewMode": null,
+        "source": [
+          "518:517",
+          0
+        ]
+      },
+      "class_type": "PreviewAny",
+      "_meta": {
+        "title": "Preview as Text"
+      }
+    },
+    "93:131": {
+      "inputs": {
+        "prefix": "SAVED:",
+        "value": [
+          "518:517",
+          0
+        ]
+      },
+      "class_type": "ConsoleDebug+",
+      "_meta": {
+        "title": "🔧 Console Debug"
+      }
+    },
+    "93:140": {
+      "inputs": {
+        "image1": [
+          "93:132",
+          5
+        ],
+        "image2": [
+          "93:139",
+          5
+        ]
+      },
+      "class_type": "ImageBatch",
+      "_meta": {
+        "title": "Batch Images"
+      }
+    },
+    "93:141": {
+      "inputs": {
+        "samples1": [
+          "71",
+          0
+        ],
+        "samples2": [
+          "71",
+          0
+        ]
+      },
+      "class_type": "LatentBatch",
+      "_meta": {
+        "title": "LatentBatch"
+      }
+    },
+    "93:139": {
+      "inputs": {
+        "seed": 604220641702796,
+        "steps": 4,
+        "cfg": 1,
+        "sampler_name": "er_sde",
+        "scheduler": "beta",
+        "denoise": 1,
+        "preview_method": "none",
+        "vae_decode": "true",
+        "model": [
+          "86",
+          0
+        ],
+        "positive": [
+          "115:109",
+          0
+        ],
+        "negative": [
+          "115:111",
+          0
+        ],
+        "latent_image": [
+          "93:141",
+          0
+        ],
+        "optional_vae": [
+          "86",
+          2
+        ]
+      },
+      "class_type": "KSampler (Efficient)",
+      "_meta": {
+        "title": "KSampler (Efficient)"
+      }
+    },
+    "93:132": {
+      "inputs": {
+        "seed": 168318804331282,
+        "steps": 4,
+        "cfg": 1,
+        "sampler_name": "euler_ancestral",
+        "scheduler": "beta",
+        "denoise": 1,
+        "preview_method": "none",
+        "vae_decode": "true",
+        "model": [
+          "86",
+          0
+        ],
+        "positive": [
+          "115:109",
+          0
+        ],
+        "negative": [
+          "115:111",
+          0
+        ],
+        "latent_image": [
+          "93:141",
+          0
+        ],
+        "optional_vae": [
+          "86",
+          2
+        ]
+      },
+      "class_type": "KSampler (Efficient)",
+      "_meta": {
+        "title": "KSampler (Efficient)"
+      }
+    },
+    "518:517": {
+      "inputs": {
+        "delimiter": "_",
+        "string1": [
+          "518:515",
+          0
+        ],
+        "string2": [
+          "504",
+          0
+        ]
+      },
+      "class_type": "JoinStrings",
+      "_meta": {
+        "title": "SUBJECT-POST"
+      }
+    },
+    "518:518": {
+      "inputs": {
+        "delimiter": "_",
+        "string1": [
+          "518:515",
+          0
+        ],
+        "string2": [
+          "505",
+          0
+        ]
+      },
+      "class_type": "JoinStrings",
+      "_meta": {
+        "title": "SUBJECT-POST"
+      }
+    },
+    "518:519": {
+      "inputs": {
+        "delimiter": "_",
+        "string1": [
+          "518:515",
+          0
+        ],
+        "string2": [
+          "506",
+          0
+        ]
+      },
+      "class_type": "JoinStrings",
+      "_meta": {
+        "title": "SUBJECT-POST"
+      }
+    },
+    "518:520": {
+      "inputs": {
+        "delimiter": "_",
+        "string1": [
+          "518:515",
+          0
+        ],
+        "string2": [
+          "507",
+          0
+        ]
+      },
+      "class_type": "JoinStrings",
+      "_meta": {
+        "title": "SUBJECT-POST"
+      }
+    },
+    "518:515": {
+      "inputs": {
+        "delimiter": "_",
+        "string1": [
+          "501",
+          0
+        ],
+        "string2": [
+          "518:521",
+          0
+        ]
+      },
+      "class_type": "JoinStrings",
+      "_meta": {
+        "title": "SUBJECT-RN"
+      }
+    },
+    "518:521": {
+      "inputs": {
+        "prefix": [
+          "546",
+          0
+        ],
+        "suffix": "",
+        "input": [
+          "243",
+          1
+        ]
+      },
+      "class_type": "SomethingToString",
+      "_meta": {
+        "title": "Something To String"
+      }
+    }
+  }
+}

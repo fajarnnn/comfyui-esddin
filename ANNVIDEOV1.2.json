@@ -1,0 +1,702 @@
+{
+  "prompt": {
+    "12": {
+      "inputs": {
+        "value": "/workspace/runpod-slim/ComfyUI/input/"
+      },
+      "class_type": "PrimitiveString",
+      "_meta": {
+        "title": "path"
+      }
+    },
+    "13": {
+      "inputs": {
+        "value": "mimi_cindy_"
+      },
+      "class_type": "PrimitiveString",
+      "_meta": {
+        "title": "String"
+      }
+    },
+    "14": {
+      "inputs": {
+        "pre_text": [
+          "12",
+          0
+        ],
+        "post_text": ".txt",
+        "input_text": [
+          "13",
+          0
+        ]
+      },
+      "class_type": "WWAA_BuildString",
+      "_meta": {
+        "title": "mainidx"
+      }
+    },
+    "15": {
+      "inputs": {
+        "pre_text": [
+          "12",
+          0
+        ],
+        "post_text": "-frame.txt",
+        "input_text": [
+          "13",
+          0
+        ]
+      },
+      "class_type": "WWAA_BuildString",
+      "_meta": {
+        "title": "🪠️ WWAA JoinString"
+      }
+    },
+    "17": {
+      "inputs": {
+        "dir_path": "input/raw/mimi_cindy_",
+        "pattern": "*",
+        "recursive": false,
+        "return_full_path": true,
+        "sort": true
+      },
+      "class_type": "ListFilesFromDir",
+      "_meta": {
+        "title": "ListFilesFromDir"
+      }
+    },
+    "18": {
+      "inputs": {
+        "index": [
+          "22",
+          0
+        ],
+        "string_list": [
+          "17",
+          0
+        ]
+      },
+      "class_type": "GetStringFromList",
+      "_meta": {
+        "title": "GetStringFromList"
+      }
+    },
+    "19": {
+      "inputs": {
+        "prefix": "TOTALVID:",
+        "value": [
+          "18",
+          1
+        ]
+      },
+      "class_type": "ConsoleDebug+",
+      "_meta": {
+        "title": "🔧 Console Debug"
+      }
+    },
+    "20": {
+      "inputs": {
+        "prefix": "CURRENTFILE:",
+        "value": [
+          "18",
+          0
+        ]
+      },
+      "class_type": "ConsoleDebug+",
+      "_meta": {
+        "title": "🔧 Console Debug"
+      }
+    },
+    "21": {
+      "inputs": {
+        "file_path": [
+          "14",
+          0
+        ]
+      },
+      "class_type": "LoadTextFileOrZero",
+      "_meta": {
+        "title": "LoadTextFileOrZero"
+      }
+    },
+    "22": {
+      "inputs": {
+        "output_type": "int",
+        "*": [
+          "21",
+          0
+        ]
+      },
+      "class_type": "easy convertAnything",
+      "_meta": {
+        "title": "Convert Any"
+      }
+    },
+    "25": {
+      "inputs": {
+        "video": [
+          "18",
+          0
+        ],
+        "force_rate": 0,
+        "custom_width": 0,
+        "custom_height": 0,
+        "frame_load_cap": 1,
+        "skip_first_frames": 0,
+        "select_every_nth": 1,
+        "format": "AnimateDiff"
+      },
+      "class_type": "VHS_LoadVideoPath",
+      "_meta": {
+        "title": "Load Video (Path) 🎥🅥🅗🅢"
+      }
+    },
+    "27": {
+      "inputs": {
+        "video_info": [
+          "25",
+          3
+        ]
+      },
+      "class_type": "VHS_VideoInfoSource",
+      "_meta": {
+        "title": "Video Info (Source) 🎥🅥🅗🅢"
+      }
+    },
+    "28": {
+      "inputs": {
+        "file_path": [
+          "15",
+          0
+        ],
+        "text": [
+          "29",
+          0
+        ],
+        "value": 0,
+        "operator": "=",
+        "comparer": 0,
+        "save_mode": "overwrite"
+      },
+      "class_type": "ConditionalSaveTextFile",
+      "_meta": {
+        "title": "ConditionalSaveTextFile"
+      }
+    },
+    "29": {
+      "inputs": {
+        "output_type": "string",
+        "*": [
+          "27",
+          1
+        ]
+      },
+      "class_type": "easy convertAnything",
+      "_meta": {
+        "title": "ConvertFrame"
+      }
+    },
+    "33": {
+      "inputs": {
+        "a": [
+          "40",
+          0
+        ],
+        "b": 120,
+        "operation": "multiply"
+      },
+      "class_type": "easy mathInt",
+      "_meta": {
+        "title": "Math Int"
+      }
+    },
+    "34": {
+      "inputs": {
+        "video": [
+          "18",
+          0
+        ],
+        "force_rate": 0,
+        "custom_width": 0,
+        "custom_height": 0,
+        "frame_load_cap": 120,
+        "skip_first_frames": [
+          "33",
+          0
+        ],
+        "select_every_nth": 1,
+        "format": "AnimateDiff"
+      },
+      "class_type": "VHS_LoadVideoPath",
+      "_meta": {
+        "title": "Load Video (Path) 🎥🅥🅗🅢"
+      }
+    },
+    "37": {
+      "inputs": {
+        "delimiter": "/",
+        "mode": "last_n",
+        "n": 1,
+        "start": 1,
+        "end": 2,
+        "join_delim": "",
+        "line_delim": "\n",
+        "strings": [
+          "18",
+          0
+        ]
+      },
+      "class_type": "CutFieldsToString",
+      "_meta": {
+        "title": "CutFieldsToString"
+      }
+    },
+    "38": {
+      "inputs": {
+        "pre_text": [
+          "12",
+          0
+        ],
+        "post_text": ".txt",
+        "input_text": [
+          "37",
+          0
+        ]
+      },
+      "class_type": "WWAA_BuildString",
+      "_meta": {
+        "title": "🪠️ WWAA JoinString"
+      }
+    },
+    "39": {
+      "inputs": {
+        "file_path": [
+          "38",
+          0
+        ]
+      },
+      "class_type": "LoadTextFileOrZero",
+      "_meta": {
+        "title": "LoadTextFileOrZero"
+      }
+    },
+    "40": {
+      "inputs": {
+        "output_type": "int",
+        "*": [
+          "39",
+          0
+        ]
+      },
+      "class_type": "easy convertAnything",
+      "_meta": {
+        "title": "Convert Any"
+      }
+    },
+    "49": {
+      "inputs": {
+        "model_name": "ava+logos-l14-linearMSE.pth"
+      },
+      "class_type": "LoadAesteticModel",
+      "_meta": {
+        "title": "LoadAesteticModel"
+      }
+    },
+    "50": {
+      "inputs": {
+        "model_name": "chadscorer.pth"
+      },
+      "class_type": "LoadAesteticModel",
+      "_meta": {
+        "title": "LoadAesteticModel"
+      }
+    },
+    "51": {
+      "inputs": {
+        "model_name": "sac+logos+ava1-l14-linearMSE.pth"
+      },
+      "class_type": "LoadAesteticModel",
+      "_meta": {
+        "title": "LoadAesteticModel"
+      }
+    },
+    "52": {
+      "inputs": {
+        "use_v2_5": true,
+        "min_types": 2,
+        "top_k": 1,
+        "free_after": true,
+        "image": [
+          "34",
+          0
+        ],
+        "aesthetic_model1": [
+          "49",
+          0
+        ],
+        "aesthetic_model2": [
+          "50",
+          0
+        ],
+        "aesthetic_model3": [
+          "51",
+          0
+        ]
+      },
+      "class_type": "CalculateAestheticScores3PlusV25List",
+      "_meta": {
+        "title": "CalculateAestheticScores3PlusV25List"
+      }
+    },
+    "53": {
+      "inputs": {
+        "tick": 0,
+        "do_free": true,
+        "unload_models": true,
+        "free_memory": true,
+        "delay_sec": 0,
+        "image": [
+          "52",
+          6
+        ]
+      },
+      "class_type": "FreeModelAndNodeCache",
+      "_meta": {
+        "title": "FreeModelAndNodeCache"
+      }
+    },
+    "54": {
+      "inputs": {
+        "filename_prefix": [
+          "79",
+          0
+        ],
+        "images": [
+          "53",
+          0
+        ]
+      },
+      "class_type": "SaveImage",
+      "_meta": {
+        "title": "Save Image"
+      }
+    },
+    "57": {
+      "inputs": {
+        "file_path": [
+          "14",
+          0
+        ],
+        "text": [
+          "64:63",
+          0
+        ],
+        "value": [
+          "65:56",
+          0
+        ],
+        "operator": "<=",
+        "comparer": 0,
+        "save_mode": "overwrite"
+      },
+      "class_type": "ConditionalSaveTextFile",
+      "_meta": {
+        "title": "ConditionalSaveTextFile"
+      }
+    },
+    "66": {
+      "inputs": {
+        "prefix": "NEXT_FRAME:",
+        "value": [
+          "65:56",
+          0
+        ]
+      },
+      "class_type": "ConsoleDebug+",
+      "_meta": {
+        "title": "🔧 Console Debug"
+      }
+    },
+    "67": {
+      "inputs": {
+        "prefix": "TOTALFRAME:",
+        "value": [
+          "27",
+          1
+        ]
+      },
+      "class_type": "ConsoleDebug+",
+      "_meta": {
+        "title": "🔧 Console Debug"
+      }
+    },
+    "68": {
+      "inputs": {
+        "prefix": "FRAMESKIP:",
+        "value": [
+          "33",
+          0
+        ]
+      },
+      "class_type": "ConsoleDebug+",
+      "_meta": {
+        "title": "🔧 Console Debug"
+      }
+    },
+    "69": {
+      "inputs": {
+        "prefix": "ISIDXFINISH:",
+        "value": [
+          "57",
+          0
+        ]
+      },
+      "class_type": "ConsoleDebug+",
+      "_meta": {
+        "title": "🔧 Console Debug"
+      }
+    },
+    "70": {
+      "inputs": {
+        "text_0": "/workspace/runpod-slim/ComfyUI/input/_jayomi_.txt",
+        "text": [
+          "14",
+          0
+        ]
+      },
+      "class_type": "ShowText|pysssss",
+      "_meta": {
+        "title": "Show Text 🐍"
+      }
+    },
+    "71": {
+      "inputs": {
+        "text_0": "/workspace/runpod-slim/ComfyUI/input/_jayomi_-frame.txt",
+        "text": [
+          "15",
+          0
+        ]
+      },
+      "class_type": "ShowText|pysssss",
+      "_meta": {
+        "title": "Show Text 🐍"
+      }
+    },
+    "72": {
+      "inputs": {
+        "prefix": "FRAMESAVED:",
+        "value": [
+          "28",
+          0
+        ]
+      },
+      "class_type": "ConsoleDebug+",
+      "_meta": {
+        "title": "🔧 Console Debug"
+      }
+    },
+    "74": {
+      "inputs": {
+        "prefix": "VIDXDIR:",
+        "value": [
+          "38",
+          0
+        ]
+      },
+      "class_type": "ConsoleDebug+",
+      "_meta": {
+        "title": "🔧 Console Debug"
+      }
+    },
+    "76": {
+      "inputs": {
+        "prefix": "CURR_IDX:",
+        "value": [
+          "21",
+          0
+        ]
+      },
+      "class_type": "ConsoleDebug+",
+      "_meta": {
+        "title": "🔧 Console Debug"
+      }
+    },
+    "79": {
+      "inputs": {
+        "pre_text": [
+          "13",
+          0
+        ],
+        "post_text": [
+          "84",
+          0
+        ],
+        "input_text": [
+          "21",
+          0
+        ]
+      },
+      "class_type": "WWAA_BuildString",
+      "_meta": {
+        "title": "🪠️ WWAA JoinString"
+      }
+    },
+    "84": {
+      "inputs": {
+        "output_type": "string",
+        "*": [
+          "40",
+          0
+        ]
+      },
+      "class_type": "easy convertAnything",
+      "_meta": {
+        "title": "Convert Any"
+      }
+    },
+    "85": {
+      "inputs": {
+        "prefix": "SAVEDAS:",
+        "value": [
+          "79",
+          0
+        ]
+      },
+      "class_type": "ConsoleDebug+",
+      "_meta": {
+        "title": "🔧 Console Debug"
+      }
+    },
+    "64:62": {
+      "inputs": {
+        "a": [
+          "64:61",
+          0
+        ],
+        "b": 1,
+        "operation": "add"
+      },
+      "class_type": "easy mathInt",
+      "_meta": {
+        "title": "Math Int"
+      }
+    },
+    "64:63": {
+      "inputs": {
+        "output_type": "string",
+        "*": [
+          "64:62",
+          0
+        ]
+      },
+      "class_type": "easy convertAnything",
+      "_meta": {
+        "title": "Convert Any"
+      }
+    },
+    "64:61": {
+      "inputs": {
+        "output_type": "int",
+        "*": [
+          "21",
+          0
+        ]
+      },
+      "class_type": "easy convertAnything",
+      "_meta": {
+        "title": "Convert Any"
+      }
+    },
+    "48:41": {
+      "inputs": {
+        "a": [
+          "40",
+          0
+        ],
+        "b": 1,
+        "operation": "add"
+      },
+      "class_type": "easy mathInt",
+      "_meta": {
+        "title": "Math Int"
+      }
+    },
+    "48:43": {
+      "inputs": {
+        "file_path": [
+          "38",
+          0
+        ],
+        "text": [
+          "48:42",
+          0
+        ],
+        "value": 0,
+        "operator": "=",
+        "comparer": 0,
+        "save_mode": "overwrite"
+      },
+      "class_type": "ConditionalSaveTextFile",
+      "_meta": {
+        "title": "ConditionalSaveTextFile"
+      }
+    },
+    "48:48": {
+      "inputs": {
+        "prefix": "IDX_DIR_SAVED",
+        "value": [
+          "48:43",
+          0
+        ]
+      },
+      "class_type": "ConsoleDebug+",
+      "_meta": {
+        "title": "🔧 Console Debug"
+      }
+    },
+    "48:42": {
+      "inputs": {
+        "output_type": "string",
+        "*": [
+          "48:41",
+          0
+        ]
+      },
+      "class_type": "easy convertAnything",
+      "_meta": {
+        "title": "Convert Any"
+      }
+    },
+    "65:55": {
+      "inputs": {
+        "a": 120,
+        "b": [
+          "33",
+          0
+        ],
+        "operation": "add"
+      },
+      "class_type": "easy mathInt",
+      "_meta": {
+        "title": "Math Int"
+      }
+    },
+    "65:56": {
+      "inputs": {
+        "a": [
+          "27",
+          1
+        ],
+        "b": [
+          "65:55",
+          0
+        ],
+        "operation": "subtract"
+      },
+      "class_type": "easy mathInt",
+      "_meta": {
+        "title": "Math Int"
+      }
+    }
+  }
+}
