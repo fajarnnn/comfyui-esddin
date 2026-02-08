@@ -44,7 +44,15 @@ echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echo "Replace Subject JSON"
 echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++"
 
+# Backup yang gak ketiban
+# cp -n ANNVIDEOV1.2.json "ANNVIDEOV1.2.json.bak" || true
+
 # Lebih aman: edit di copy biar file asli gak nempel berubah
 cp ANNVIDEOV1.2.json ANNVIDEOV1.2.json.tmp
 sh replacer.sh "SBJ" "$SUBJECT" ANNVIDEOV1.2.json.tmp
 mv ANNVIDEOV1.2.json.tmp annvidprompt.json
+
+echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++"
+echo "START INSTALLING COMFYUI CUSTOM NODES & DEPENDENCY"
+echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++"
+sh ins.sh

@@ -11,7 +11,7 @@
     },
     "13": {
       "inputs": {
-        "value": "mimi_cindy_"
+        "value": "SBJ"
       },
       "class_type": "PrimitiveString",
       "_meta": {
@@ -54,7 +54,7 @@
     },
     "17": {
       "inputs": {
-        "dir_path": "input/raw/mimi_cindy_",
+        "dir_path": "input/raw/SBJ",
         "pattern": "*",
         "recursive": false,
         "return_full_path": true,
