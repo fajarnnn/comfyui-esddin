@@ -28,7 +28,8 @@ else:
 
 print("FTP mode :", FTP)
 print("ALLOW_EXT:", sorted(ALLOW_EXT))
-
+HTOK= os.getenv("HF_TOKEN")
+print(HTOK)
 os.makedirs(LOCAL_DIR, exist_ok=True)
 api = HfApi()
 
@@ -38,6 +39,7 @@ items = list(api.list_repo_tree(
     revision="main",
     path_in_repo=PREFIX,
     recursive=True,
+    token=HTOK
 ))
 
 # filter file
@@ -58,6 +60,7 @@ def dl(path_in_repo: str):
         local_dir=LOCAL_DIR,
         local_dir_use_symlinks=False,
         resume_download=True,
+        token=HTOK
     )
 
 ok = 0
