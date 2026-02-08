@@ -58,7 +58,7 @@ pip_install_req_if_exists() {
   local req="$repo_dir/requirements.txt"
   if [[ -f "$req" ]]; then
     log "pip install -r $(basename "$repo_dir")/requirements.txt (venv)"
-    pip install --no-cache-dir -r "$req"
+    /workspace/runpod-slim/ComfyUI/.venv/bin/python -m pip install --no-cache-dir -r "$req"
   else
     log "No requirements.txt in $(basename "$repo_dir")"
   fi

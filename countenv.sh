@@ -1,0 +1,7 @@
+export SUBJECTLIST=$1
+export FTPS=$2
+export POSTF=$3
+echo "SUBJECTLIST=$SUBJECTLIST"
+echo "FTPS=$FTPS"
+echo "POSTF=$POSTF"
+ 
