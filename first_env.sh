@@ -55,4 +55,4 @@ mv ANNVIDEOV1.2.json.tmp annvidprompt.json
 echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echo "START INSTALLING COMFYUI CUSTOM NODES & DEPENDENCY"
 echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++"
-sh ins.sh
+bash ins.sh
