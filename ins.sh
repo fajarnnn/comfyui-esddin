@@ -126,7 +126,7 @@ wget -O /workspace/runpod-slim/ComfyUI/models/schp/exp-schp-201908270938-pascal-
 rm -rf /workspace/runpod-slim/ComfyUI/custom_nodes/nodes
 git clone https://Esddin:$HF_TOKEN_APP@huggingface.co/datasets/Esddin/nodes --branch master /workspace/runpod-slim/ComfyUI/custom_nodes/nodes
 pip install aesthetic-predictor-v2-5
-pip install git+https://github.com/openai/CLIP.git
+pip install --no-build-isolation "clip @ git+https://github.com/openai/CLIP.git@dcba3cb2e2827b402d2701e7e1c7d9fed8a20ef1"
 pip install pytorch_lightning
 curl -s -X GET http://127.0.0.1:8188/manager/reboot
 log "========================================"
