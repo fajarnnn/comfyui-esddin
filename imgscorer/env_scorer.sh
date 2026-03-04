@@ -43,4 +43,4 @@ echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echo "START Downloading Source"
 echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++"
 
-python3 imagescorejson.py --n 2 --subject "$SUBJECT" --filejson "img_scorer.json"
+python3 imagescorejson.py --n 2 --subject "$SUBJECT" --filejson "$JF"
