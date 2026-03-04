@@ -1,57 +1,77 @@
 import os
+import argparse
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from huggingface_hub import HfApi, hf_hub_download
+from huggingface_hub import hf_hub_download, HfApi
 from huggingface_hub.hf_api import RepoFile
 
-# ================= CONFIG =================
+# ================= ARGS SETUP =================
+parser = argparse.ArgumentParser(description="HF Downloader")
+# Pakai --repo untuk milih gm/nt/jp
+parser.add_argument("--repo", type=str, choices=["gm", "nt", "jp"], required=True)
+# Pakai --prefix untuk milih folder (qwen/final/raw)
+parser.add_argument("--prefix", type=str, default="qwen")
+args = parser.parse_args()
+
+# ================= CONFIG & MAPPING =================
+REPO_CONFIG = {
+    "gm": {"repo": "gmesddin/raw-asia", "token": "HF_TOKEN_GM"},
+    "nt": {"repo": "nutakuesddin/raw-ign", "token": "HF_TOKEN_NT"},
+    "jp": {"repo": "jpesddin/raw-ig", "token": "HF_TOKEN_JP"}
+}
+
 LOCAL_DIR = "/workspace/runpod-slim/ComfyUI/input/"
-REPO_ID   = os.getenv("REPO_ID")        # wajib
-SBJ       = os.getenv("SUBJECT")        # wajib
-FTP       = (os.getenv("FTP") or "").lower().strip()   # image / video
-PREFIX    = f"qwen/{SBJ}_qwen"
+SBJ = os.getenv("SUBJECT")
+# FTP tetep ambil dari ENV (isinya: image / video)
+FTP_MODE = (os.getenv("FTP") or "image").lower().strip()
+
+# Penentuan Repo & Token dari Args
+REPO_ID = REPO_CONFIG[args.repo]["repo"]
+token_env_name = REPO_CONFIG[args.repo]["token"]
+HTOK = os.getenv(token_env_name)
+
+# Prefix dinamis dari Args + Env Subject
+PREFIX = f"{args.prefix}/{SBJ}_qwen"
 MAX_WORKERS = 8
-# =========================================
 
-if not REPO_ID or not SBJ:
-    raise RuntimeError("REPO_ID / SUBJECT env belum di-set")
-
-# mapping ekstensi
+# Mapping ekstensi berdasarkan FTP mode
 IMAGE_EXT = {".png", ".jpg", ".jpeg", ".webp", ".bmp", ".tiff"}
 VIDEO_EXT = {".mp4", ".mov", ".mkv", ".webm", ".avi"}
+ALLOW_EXT = IMAGE_EXT if FTP_MODE == "image" else VIDEO_EXT
 
-if FTP == "image":
-    ALLOW_EXT = IMAGE_EXT
-elif FTP == "video":
-    ALLOW_EXT = VIDEO_EXT
-else:
-    raise RuntimeError("FTP harus 'image' atau 'video'")
+# ================= VALIDASI =================
+if not SBJ:
+    raise RuntimeError("SUBJECT env kosong!")
+if not HTOK:
+    raise RuntimeError(f"Token {token_env_name} tidak ditemukan!")
 
-print("FTP mode :", FTP)
-print("ALLOW_EXT:", sorted(ALLOW_EXT))
-HTOK= os.getenv("HF_TOKEN")
-print(HTOK)
+print(f"🚀 Starting Download")
+print(f"Target Repo : {REPO_ID}")
+print(f"Prefix Path : {PREFIX}")
+print(f"FTP Mode    : {FTP_MODE}") # image atau video
+
 os.makedirs(LOCAL_DIR, exist_ok=True)
-api = HfApi()
+api = HfApi(token=HTOK)
 
-items = list(api.list_repo_tree(
-    repo_id=REPO_ID,
-    repo_type="dataset",
-    revision="main",
-    path_in_repo=PREFIX,
-    recursive=True,
-    token=HTOK
-))
+# --- Proses List & Filter ---
+try:
+    items = list(api.list_repo_tree(
+        repo_id=REPO_ID,
+        repo_type="dataset",
+        path_in_repo=PREFIX,
+        recursive=True
+    ))
+except Exception as e:
+    print(f"❌ Error listing repo (cek path prefix): {e}")
+    items = []
 
-# filter file
-files = []
-for it in items:
-    if isinstance(it, RepoFile):
-        ext = os.path.splitext(it.path)[1].lower()
-        if ext in ALLOW_EXT:
-            files.append(it.path)
+files = [
+    it.path for it in items 
+    if isinstance(it, RepoFile) and os.path.splitext(it.path)[1].lower() in ALLOW_EXT
+]
 
-print("Total files after filter:", len(files))
+print(f"Total files to download: {len(files)}")
 
+# --- Proses Download ---
 def dl(path_in_repo: str):
     return hf_hub_download(
         repo_id=REPO_ID,
@@ -63,20 +83,19 @@ def dl(path_in_repo: str):
         token=HTOK
     )
 
-ok = 0
-fail = 0
+ok, fail = 0, 0
+if files:
+    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as ex:
+        futs = {ex.submit(dl, f): f for f in files}
+        for i, fut in enumerate(as_completed(futs), 1):
+            try:
+                fut.result()
+                ok += 1
+            except Exception as e:
+                fail += 1
+                print(f"FAIL: {futs[fut]} -> {e}")
+            
+            if i % 50 == 0 or i == len(files):
+                print(f"Progress: {i}/{len(files)} (ok={ok}, fail={fail})")
 
-with ThreadPoolExecutor(max_workers=MAX_WORKERS) as ex:
-    futs = {ex.submit(dl, f): f for f in files}
-    for i, fut in enumerate(as_completed(futs), 1):
-        f = futs[fut]
-        try:
-            fut.result()
-            ok += 1
-        except Exception as e:
-            fail += 1
-            print("FAIL:", f, "->", repr(e))
-        if i % 50 == 0 or i == len(files):
-            print(f"Progress: {i}/{len(files)} (ok={ok}, fail={fail}, workers={MAX_WORKERS})")
-
-print("DONE:", {"ok": ok, "fail": fail})
+print(f"🏁 DONE: {{'ok': {ok}, 'fail': {fail}}}")

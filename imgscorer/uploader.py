@@ -1,16 +1,26 @@
 import os
 import time
 import shutil
-import argparse  # Tambahkan ini
+import argparse
 from pathlib import Path
 from typing import List, Tuple
 from huggingface_hub import HfApi
 
-# Mapping Alias ke Full Repo ID
-REPO_MAP = {
-    "gm": "gmesddin/raw-asia",
-    "nt": "nutakuesddin/raw-ign",
-    "jp": "jpesddin/raw-ig"
+# Mapping Alias ke Full Repo ID dan ENV Token Name
+# Kita mapping ke nama variabel ENV-nya supaya token tetap aman (tidak hardcode)
+REPO_CONFIG = {
+    "gm": {
+        "repo_id": "gmesddin/raw-asia",
+        "token_env": "HF_TOKEN_GM"
+    },
+    "nt": {
+        "repo_id": "nutakuesddin/raw-ign",
+        "token_env": "HF_TOKEN_NT"
+    },
+    "jp": {
+        "repo_id": "jpesddin/raw-ig",
+        "token_env": "HF_TOKEN_JP"
+    }
 }
 
 # ================= ARGS SETUP =================
@@ -19,22 +29,18 @@ parser.add_argument(
     "--repo", 
     type=str, 
     choices=["gm", "nt", "jp"], 
-    help="Pilih repo: gm (asia), nt (ign), atau jp (ig)"
+    required=True, # Kita buat wajib agar logic if-nya jalan
+    help="Pilih target: gm (asia), nt (ign), atau jp (ig)"
 )
-# Opsional: Bisa juga input REPO_ID custom kalau tidak ada di list
-parser.add_argument("--repo_id", type=str, help="Full Repo ID (overwrites --repo)")
 args = parser.parse_args()
 
-# Tentukan REPO_ID berdasarkan argumen atau ENV
-if args.repo_id:
-    REPO_ID = args.repo_id
-elif args.repo:
-    REPO_ID = REPO_MAP[args.repo]
-else:
-    REPO_ID = os.getenv("REPO_ID") # Fallback ke env kalau gak ada argumen
-# ==============================================
+# Logic Pemilihan REPO dan TOKEN berdasarkan IF
+target = args.repo
+REPO_ID = REPO_CONFIG[target]["repo_id"]
+token_env_name = REPO_CONFIG[target]["token_env"]
+HF_TOKEN = os.getenv(token_env_name)
 
-# ================= CONFIG (Sisanya tetap sama) =================
+# ================= CONFIG =================
 SUBJECT = os.getenv("SUBJECT")
 SRC = Path(os.getenv("MAIN_OUT", ""))
 DST_ROOT = Path(os.getenv("DST_PATH", ""))
@@ -47,28 +53,21 @@ VERIFY_RETRIES = 3
 VERIFY_SLEEP = 10
 BATCH_SIZE = 0
 
-# Validasi Final
-if not REPO_ID:
-    raise RuntimeError("REPO_ID tidak ditentukan! Gunakan argumen --repo [gm|nt|jp] atau set env REPO_ID")
-
-HF_TOKEN = os.getenv("HF_TOKEN")
+# ================= VALIDASI =================
 if not HF_TOKEN:
-    raise RuntimeError("HF_TOKEN kosong (set env HF_TOKEN dulu, jangan hardcode)")
+    raise RuntimeError(f"Token {token_env_name} tidak ditemukan di environment! Pastikan sudah di-export.")
 
 if not SUBJECT:
     raise RuntimeError("SUBJECT kosong (set env SUBJECT)")
-if not REPO_ID:
-    raise RuntimeError("REPO_ID kosong (set env REPO_ID)")
+
 if not PATH_IN_REPO:
-    raise RuntimeError("PATH_FORMAT/PATH_IN_REPO kosong (set env PATH_FORMAT)")
+    raise RuntimeError("PATH_FORMAT kosong (set env PATH_FORMAT)")
+
 if not SRC.exists():
-    raise RuntimeError(f"MAIN_OUT tidak valid / tidak ada: {SRC}")
-if not DST_ROOT:
-    raise RuntimeError("DST_PATH kosong (set env DST_PATH)")
+    raise RuntimeError(f"MAIN_OUT tidak valid: {SRC}")
 
 api = HfApi(token=HF_TOKEN)
 INBOX.mkdir(parents=True, exist_ok=True)
-
 
 def unique_dest_path(dst_dir: Path, filename: str) -> Path:
     """Kalau filename sudah ada di dst_dir, bikin nama baru: name.ext -> name__dup2.ext -> ..."""
