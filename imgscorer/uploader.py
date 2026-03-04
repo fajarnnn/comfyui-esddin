@@ -1,26 +1,55 @@
 import os
 import time
 import shutil
+import argparse  # Tambahkan ini
 from pathlib import Path
 from typing import List, Tuple
 from huggingface_hub import HfApi
 
-# ================= CONFIG =================
-SUBJECT = os.getenv("SUBJECT")
+# Mapping Alias ke Full Repo ID
+REPO_MAP = {
+    "gm": "gmesddin/raw-asia",
+    "nt": "nutakuesddin/raw-ign",
+    "jp": "jpesddin/raw-ig"
+}
 
+# ================= ARGS SETUP =================
+parser = argparse.ArgumentParser(description="Auto-uploader for HuggingFace")
+parser.add_argument(
+    "--repo", 
+    type=str, 
+    choices=["gm", "nt", "jp"], 
+    help="Pilih repo: gm (asia), nt (ign), atau jp (ig)"
+)
+# Opsional: Bisa juga input REPO_ID custom kalau tidak ada di list
+parser.add_argument("--repo_id", type=str, help="Full Repo ID (overwrites --repo)")
+args = parser.parse_args()
+
+# Tentukan REPO_ID berdasarkan argumen atau ENV
+if args.repo_id:
+    REPO_ID = args.repo_id
+elif args.repo:
+    REPO_ID = REPO_MAP[args.repo]
+else:
+    REPO_ID = os.getenv("REPO_ID") # Fallback ke env kalau gak ada argumen
+# ==============================================
+
+# ================= CONFIG (Sisanya tetap sama) =================
+SUBJECT = os.getenv("SUBJECT")
 SRC = Path(os.getenv("MAIN_OUT", ""))
 DST_ROOT = Path(os.getenv("DST_PATH", ""))
-INBOX = DST_ROOT / "inbox"   # tempat file yang siap diupload
+INBOX = DST_ROOT / "inbox"
 
-REPO_ID = os.getenv("REPO_ID")
-PATH_IN_REPO = os.getenv("PATH_FORMAT")  # contoh: "qwen/{subject}_qwen" (sudah di-resolve dari env kamu)
+PATH_IN_REPO = os.getenv("PATH_FORMAT")
+INTERVAL = 120
+VERIFY_ON_ERROR = True
+VERIFY_RETRIES = 3
+VERIFY_SLEEP = 10
+BATCH_SIZE = 0
 
-INTERVAL = 120  # detik
-VERIFY_ON_ERROR = True       # kalau upload_folder error (timeout), verifikasi ke repo dulu
-VERIFY_RETRIES = 3           # berapa kali retry verifikasi
-VERIFY_SLEEP = 10            # jeda antar verifikasi (detik)
-BATCH_SIZE = 0               # 0 = upload semua; >0 = upload per N file untuk mengurangi timeout
-# =========================================
+# Validasi Final
+if not REPO_ID:
+    raise RuntimeError("REPO_ID tidak ditentukan! Gunakan argumen --repo [gm|nt|jp] atau set env REPO_ID")
 
 HF_TOKEN = os.getenv("HF_TOKEN")
 if not HF_TOKEN:
