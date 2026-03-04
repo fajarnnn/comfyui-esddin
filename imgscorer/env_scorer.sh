@@ -64,15 +64,3 @@ add_to_bashrc "REPO_ID_JP" "$REPO_ID_JP"
 # Load ke session saat ini biar langsung bisa dipake script python dibawahnya
 export SUBJECT MAIN_OUT DST_PATH URL PATH_FORMAT HF_TOKEN_GM HF_TOKEN_NT HF_TOKEN_JP REPO_ID_GM REPO_ID_NT REPO_ID_JP
 # ---------------------------------------------------------
-
-echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++"
-echo "ENV PERMANENTLY SAVED"
-echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++"
-
-echo "START Downloading Source..."
-python3 downloader.py
-
-echo "Generating Workflow JSON..."
-python3 imagescorejson.py --n 2 --subject "$SUBJECT" --filejson "$JF"
-
-echo "DONE!"

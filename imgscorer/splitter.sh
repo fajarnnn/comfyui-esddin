@@ -12,7 +12,7 @@ if [ ! -d "$SRC_DIR" ]; then
     echo "Error: Directory $SRC_DIR tidak ditemukan!"
     exit 1
 fi
-
+CUT_FIELDS = $1
 declare -A seen
 
 # Gunakan nullglob agar jika folder kosong tidak memproses string "*"
