@@ -47,6 +47,8 @@ function add_to_bashrc() {
 echo "Updating .bashrc with all environment variables..."
 
 # Export semua variabel yang lo butuhin
+add_to_bashrc "JF" "$JF"
+add_to_bashrc "FTP" "$FTP"
 add_to_bashrc "SUBJECT" "$SUBJECT"
 add_to_bashrc "MAIN_OUT" "$MAIN_OUT"
 add_to_bashrc "DST_PATH" "$DST_PATH"
