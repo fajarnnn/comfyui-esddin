@@ -64,6 +64,18 @@ add_to_bashrc "REPO_ID_NT" "$REPO_ID_NT"
 add_to_bashrc "REPO_ID_JP" "$REPO_ID_JP"
 
 # Load ke session saat ini biar langsung bisa dipake script python dibawahnya
-export SUBJECT MAIN_OUT DST_PATH URL PATH_FORMAT HF_TOKEN_GM HF_TOKEN_NT HF_TOKEN_JP REPO_ID_GM REPO_ID_NT REPO_ID_JP
-# ---------------------------------------------------------
-# source ~/.bashrc
+# 2. SUNTIK LANGSUNG KE SESSION SEKARANG (Inilah pengganti source yang aman)
+# Tambahkan JF dan FTP di sini biar Python runner.py gak error!
+export JF="$JF"
+export FTP="$FTP"
+export SUBJECT="$SUBJECT"
+export MAIN_OUT="$MAIN_OUT"
+export DST_PATH="$DST_PATH"
+export URL="$URL"
+export PATH_FORMAT="$PATH_FORMAT"
+export HF_TOKEN_GM="$HF_TOKEN_GM"
+export HF_TOKEN_NT="$HF_TOKEN_NT"
+export HF_TOKEN_JP="$HF_TOKEN_JP"
+export REPO_ID_GM="$REPO_ID_GM"
+export REPO_ID_NT="$REPO_ID_NT"
+export REPO_ID_JP="$REPO_ID_JP"
