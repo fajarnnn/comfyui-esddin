@@ -20,6 +20,7 @@ CONTINUE_ON_ERROR="${CONTINUE_ON_ERROR:-1}"
 
 CUSTOM_NODES=(
   "https://github.com/pythongosssss/ComfyUI-Custom-Scripts"
+  "https://github.com/ltdrdata/ComfyUI-Impact-Pack"
   "https://github.com/yolain/ComfyUI-Easy-Use"
   "https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite"
   "https://github.com/strimmlarn/ComfyUI-Strimmlarns-Aesthetic-Score"
