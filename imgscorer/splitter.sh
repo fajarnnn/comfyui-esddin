@@ -16,7 +16,7 @@ declare -A seen
 
 # Gunakan nullglob agar jika folder kosong tidak memproses string "*"
 shopt -s nullglob
-CUT_FIELDS = "$1"
+CUT_FIELDS=$1
 
 for file in "$SRC_DIR"/*; do
     # Lewati jika itu folder (termasuk folder dupe itu sendiri)
