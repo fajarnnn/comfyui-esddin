@@ -7,8 +7,8 @@ def generate_comfy_json(n_value, subject_name, output_filename):
     workflow_template = {
         "36": {"inputs": {"directory_path": ["58", 0], "file_extension": "ALL", "reset_index": False, "sort_method": "numerical", "reload_directory": False, "read_caption": False, "starting_index": 0}, "class_type": "WWAA_ImageLoader", "_meta": {"title": "🪠️ WWAA Image Batch Loader"}},
         "46": {"inputs": {"delimiter": "_", "mode": "first_n", "n": str(n_value), "start": 1, "end": str(n_value), "join_delim": "", "line_delim": "\n", "strings": ["36", 3]}, "class_type": "CutFieldsToString", "_meta": {"title": "CutFieldsToString"}},
-        "58": {"inputs": {"value": f"/workspace/runpod-slim/ComfyUI/input/qwen/{subject_name}"}, "class_type": "easy string", "_meta": {"title": "srcdir"}},
-        "60": {"inputs": {"value": f"/workspace/runpod-slim/ComfyUI/input/qwen/{subject_name}/dupe"}, "class_type": "easy string", "_meta": {"title": "dupedir"}},
+        "58": {"inputs": {"value": f"/workspace/runpod-slim/ComfyUI/input/qwen/{subject_name}_qwen"}, "class_type": "easy string", "_meta": {"title": "srcdir"}},
+        "60": {"inputs": {"value": f"/workspace/runpod-slim/ComfyUI/input/qwen/{subject_name}_qwen/dupe"}, "class_type": "easy string", "_meta": {"title": "dupedir"}},
         "82": {"inputs": {"inputcount": 2, "Update inputs": None, "image_1": ["36", 0], "image_2": ["102:63", 0]}, "class_type": "ImageBatchMulti", "_meta": {"title": "Image Batch Multi"}},
         "101": {"inputs": {"preview": "", "previewMode": None, "source": ["102:102", 2]}, "class_type": "PreviewAny", "_meta": {"title": "Preview as Text"}},
         "105": {"inputs": {"init_score_ava": 0, "init_score_chad": 0, "init_score_ava2": 0, "init_score_other": 0, "init_score_avg": 0, "length": 0}, "class_type": "EmptyImageAndScores", "_meta": {"title": "EmptyImageAndScores"}},
