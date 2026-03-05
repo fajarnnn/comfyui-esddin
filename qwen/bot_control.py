@@ -4,43 +4,67 @@ import os
 
 # Konfigurasi
 TOKEN = "8667029481:AAH9hNvk9bIKGdEiFljJa6nnKjpu2LtCEMo"
-ALLOWED_ID = 1471991896 # Biar orang lain gak bisa nge-hit server lo
+ALLOWED_ID = 1471991896
 WORKDIR = "/workspace/comfyui-esddin/qwen"
 
 bot = telebot.TeleBot(TOKEN)
 
-@bot.message_handler(commands=['start', 'help'])
-def send_welcome(message):
-    bot.reply_to(message, "Siap Jar! Kirim perintah dengan format:\n/run <subject> <dr> <ur>\n\nContoh:\n/run 23.11_ nt nt")
-
 @bot.message_handler(commands=['run'])
-def run_script(message):
-    # Cek ID biar aman
+def handle_run(message):
     if message.from_user.id != ALLOWED_ID:
-        bot.reply_to(message, "Lu siapa? Gak kenal.")
+        bot.reply_to(message, "❌ Akses ditolak.")
         return
 
     try:
-        # Ambil argumen dari pesan: /run subject dr ur
-        args = message.text.split()
-        if len(args) < 4:
-            bot.reply_to(message, "Format salah Jar! Pakai: /run <subject> <dr> <ur>")
+        # Format: /run <subject> <dr> <ur> <count> <isTrue> <isSolo> <prf>
+        # Contoh: /run 23.11_ nt nt 150 true false 200000
+        parts = message.text.split()
+        
+        if len(parts) < 8:
+            msg = (
+                "⚠️ *Format Salah!*\n\n"
+                "Gunakan:\n"
+                "`/run <subject> <dr> <ur> <count> <n> <ss> <prf>`\n\n"
+                "Contoh:\n"
+                "`/run 23.11_ nt nt 150 true false 200000`"
+            )
+            bot.reply_to(message, msg, parse_mode="Markdown")
             return
 
-        subject = args[1]
-        dr = args[2]
-        ur = args[3]
+        # Mapping argumen
+        subject = parts[1]
+        dr      = parts[2]
+        ur      = parts[3]
+        count   = parts[4]
+        n_val   = parts[5]
+        ss_val  = parts[6]
+        prf     = parts[7]
 
-        bot.reply_to(message, f"🚀 Memulai workflow untuk <b>{subject}</b>...\nMohon tunggu notif selesai.")
+        bot.reply_to(message, f"🚀 *Workflow Dimulai!*\n"
+                              f"Subject: `{subject}`\n"
+                              f"Count: `{count}`\n"
+                              f"PRF: `{prf}`", parse_mode="Markdown")
 
-        # Jalankan main.sh di background agar bot tidak timeout
-        cmd = f"bash {WORKDIR}/main.sh -s {subject} -dr {dr} -ur {ur}"
-        
-        # Menggunakan Popen agar bot tetap responsif (async)
-        subprocess.Popen(cmd, shell=True, cwd=WORKDIR)
+        # Menjalankan command dengan variabel environment COUNT
+        # Kita set environment variable COUNT di sini
+        env = os.environ.copy()
+        env["COUNT"] = count
+
+        cmd = [
+            "/bin/bash", "main.sh",
+            "-s", subject,
+            "-dr", dr,
+            "-ur", ur,
+            "-n", n_val,
+            "-ss", ss_val,
+            "-p", prf
+        ]
+
+        # Jalankan di background
+        subprocess.Popen(cmd, cwd=WORKDIR, env=env)
 
     except Exception as e:
-        bot.reply_to(message, f"❌ Gagal jalanin script: {str(e)}")
+        bot.reply_to(message, f"❌ Error: {str(e)}")
 
-print("Bot standby Jar...")
+print("Bot standby, Jar...")
 bot.infinity_polling()
