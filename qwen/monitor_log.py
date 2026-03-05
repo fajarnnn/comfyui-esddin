@@ -1,7 +1,8 @@
 import time
 import requests
-import re
+import subprocess
 import os
+import re
 
 # --- Konfigurasi ---
 LOG_FILE = "/workspace/runpod-slim/comfyui.log"
@@ -13,56 +14,43 @@ def send_tele(message):
     payload = {"chat_id": TELE_ID, "text": message, "parse_mode": "HTML"}
     try:
         requests.post(url, json=payload, timeout=10)
-    except Exception as e:
-        print(f"Gagal kirim Telegram: {e}")
+    except:
+        pass
 
-def monitor_log():
-    print(f"Memulai pemantauan log: {LOG_FILE}")
-    
-    # Variabel untuk tracking progres
-    last_sent_percent = 0
-    
-    # Pastikan file ada sebelum mulai
-    while not os.path.exists(LOG_FILE):
-        time.sleep(1)
+def get_latest_val(pattern, text):
+    # Mencari angka terakhir dari pola (misal CURRENT_IDX: 23)
+    matches = re.findall(rf"{pattern}\s*:\s*(\d+)", text)
+    return int(matches[-1]) if matches else None
 
-    with open(LOG_FILE, "r") as f:
-        # Pindah ke baris paling akhir
-        f.seek(0, 2)
+def monitor():
+    print(f"Monitoring log {LOG_FILE} tiap 1 menit...")
+    
+    while True:
+        if os.path.exists(LOG_FILE):
+            try:
+                # Ambil snapshot 50 baris terakhir
+                result = subprocess.check_output(["tail", "-n", "50", LOG_FILE]).decode('utf-8')
+                
+                curr_idx = get_latest_val("CURRENT_IDX", result)
+                total_img = get_latest_val("TOTAL_IMAGE", result)
+
+                if curr_idx is not None and total_img is not None:
+                    actual_curr = curr_idx + 1
+                    
+                    # Kirim laporan rutin tiap menit
+                    msg = f"⏳ <b>Update Progress</b>\nImage: <code>{actual_curr}</code> / <code>{total_img}</code>"
+                    send_tele(msg)
+                    
+                    # Cek kalau sudah benar-benar selesai
+                    if actual_curr >= total_img:
+                        send_tele(f"✅ <b>Workflow Selesai!</b>\nTotal {total_img} image telah diproses.")
+                        print("Selesai. Mematikan monitor...")
+                        break
+            except Exception as e:
+                print(f"Error: {e}")
         
-        while True:
-            line = f.readline()
-            if not line:
-                time.sleep(1)
-                continue
-            
-            # Cari baris CURRENT_IDX dan TOTAL_IMAGE
-            if "CURRENT_IDX:" in line:
-                try:
-                    curr_idx = int(line.split(":")[1].strip())
-                    # Kita butuh baris TOTAL_IMAGE juga, biasanya muncul berurutan
-                    # Baca baris berikutnya untuk ambil TOTAL_IMAGE
-                    next_line = f.readline()
-                    if "TOTAL_IMAGE:" in next_line:
-                        total_img = int(next_line.split(":")[1].strip())
-                        
-                        actual_curr = curr_idx + 1
-                        progress = (actual_curr / total_img) * 100
-                        
-                        # Cek kelipatan 25% (25, 50, 75)
-                        # Kita pakai interval agar tidak spam jika log menulis berulang
-                        for p in [25, 50, 75]:
-                            if progress >= p > last_sent_percent:
-                                send_tele(f"📊 <b>Progres Workflow</b>\nProses: {p}%\nDetail: {actual_curr}/{total_img} Image")
-                                last_sent_percent = p
-                        
-                        # Cek jika sudah selesai
-                        if actual_curr >= total_img:
-                            send_tele(f"✅ <b>Workflow Selesai!</b>\nTotal: {total_img}/{total_img} Image berhasil diproses.")
-                            print("Selesai. Mematikan monitor...")
-                            break
-                except Exception as e:
-                    print(f"Error parsing log: {e}")
+        # Tunggu 1 menit untuk pengecekan berikutnya
+        time.sleep(60)
 
 if __name__ == "__main__":
-    monitor_log()
+    monitor()
