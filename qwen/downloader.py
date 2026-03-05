@@ -49,7 +49,7 @@ print(f"Target Repo : {REPO_ID}")
 print(f"Prefix Path : {PREFIX}")
 print(f"FTP Mode    : {FTP_MODE}") # image atau video
 
-os.makedirs(LOCAL_DIR, exist_ok=True)
+os.makedirs(LOCAL_DIR, exist_ok=True) 
 api = HfApi(token=HTOK)
 
 # --- Proses List & Filter ---
