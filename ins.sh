@@ -130,6 +130,11 @@ git clone https://Esddin:$HF_TOKEN_APP@huggingface.co/datasets/Esddin/nodes --br
 pip install aesthetic-predictor-v2-5
 pip install --no-build-isolation "clip @ git+https://github.com/openai/CLIP.git@dcba3cb2e2827b402d2701e7e1c7d9fed8a20ef1"
 pip install pytorch_lightning
+mkdir -p /workspace/runpod-slim/ComfyUI/models/checkpoints && \
+curl -L -H "Authorization: Bearer $HF_TOKEN_APP" \
+"https://huggingface.co/Phr00t/Qwen-Image-Edit-Rapid-AIO/resolve/main/v19/Qwen-Rapid-AIO-NSFW-v19.safetensors" \
+-o "/workspace/runpod-slim/ComfyUI/models/checkpoints/Qwen-Rapid-AIO-NSFW-v19.safetensors"
+
 curl -s -X GET http://127.0.0.1:8188/manager/reboot
 log "========================================"
 log "All custom nodes installed into venv ✅"
