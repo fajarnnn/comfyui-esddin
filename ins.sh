@@ -27,7 +27,6 @@ CUSTOM_NODES=(
   "https://github.com/hgabha/WWAA-CustomNodes"
   "https://github.com/crystian/ComfyUI-Crystools"
   "https://github.com/jags111/efficiency-nodes-comfyui"
-  "https://github.com/icekiub-ai/ComfyUI-IcyHider"
   "https://github.com/cubiq/ComfyUI_essentials"
   "https://github.com/Curt-Park/human-parser-comfyui-node-in-pure-python"
   "https://github.com/icekiub-ai/ComfyUI-IcyHider"
@@ -134,7 +133,11 @@ mkdir -p /workspace/runpod-slim/ComfyUI/models/checkpoints && \
 curl -L -H "Authorization: Bearer $HF_TOKEN_APP" \
 "https://huggingface.co/Phr00t/Qwen-Image-Edit-Rapid-AIO/resolve/main/v19/Qwen-Rapid-AIO-NSFW-v19.safetensors" \
 -o "/workspace/runpod-slim/ComfyUI/models/checkpoints/Qwen-Rapid-AIO-NSFW-v19.safetensors"
-
+# Cari PID bot lama dan matikan
+pkill -f bot_control.py
+sleep 2
+# Jalankan ulang di background
+nohup python3 /workspace/comfyui-esddin/qwen/bot_control.py > /workspace/comfyui-esddin/qwen/bot.log 2>&1 &
 curl -s -X GET http://127.0.0.1:8188/manager/reboot
 log "========================================"
 log "All custom nodes installed into venv ✅"
