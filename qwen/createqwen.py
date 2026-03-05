@@ -78,7 +78,7 @@ def create_comfy_json(subject, is_full=False, is_solo=True, prf_num=100000, outp
                 "_meta": {"title": "🪠️ WWAA Image Batch Loader"}
             },
             "489": {
-                "inputs": {"value": f"{subject}"},
+                "inputs": {"value": f"{subject}_{prf_num}"},
                 "class_type": "easy string",
                 "_meta": {"title": "String"}
             },
