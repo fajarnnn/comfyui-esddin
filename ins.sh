@@ -134,6 +134,7 @@ curl -L -H "Authorization: Bearer $HF_TOKEN_APP" \
 "https://huggingface.co/Phr00t/Qwen-Image-Edit-Rapid-AIO/resolve/main/v19/Qwen-Rapid-AIO-NSFW-v19.safetensors" \
 -o "/workspace/runpod-slim/ComfyUI/models/checkpoints/Qwen-Rapid-AIO-NSFW-v19.safetensors"
 # Cari PID bot lama dan matikan
+pip install pyTelegramBotAPI requests
 pkill -f bot_control.py
 sleep 2
 # Jalankan ulang di background
