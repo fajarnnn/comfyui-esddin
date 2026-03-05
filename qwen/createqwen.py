@@ -473,6 +473,7 @@ if __name__ == "__main__":
     s_bool = args.isSOLO.lower() == "true"
     
     # Default output path
-    out_file = args.out if args.out else f"/workspace/runpod-slim/{args.subject}.json"
+    out_file = args.out if args.out else f"{os.getenv("JF")}.json"
 
     create_comfy_json(args.subject, is_full=f_bool, is_solo=s_bool, output_filename=out_file)
+    

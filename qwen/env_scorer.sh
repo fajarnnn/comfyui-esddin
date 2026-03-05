@@ -79,3 +79,4 @@ export HF_TOKEN_JP="$HF_TOKEN_JP"
 export REPO_ID_GM="$REPO_ID_GM"
 export REPO_ID_NT="$REPO_ID_NT"
 export REPO_ID_JP="$REPO_ID_JP"
+

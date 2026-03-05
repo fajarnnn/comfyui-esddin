@@ -30,7 +30,7 @@ token_env_name = REPO_CONFIG[args.repo]["token"]
 HTOK = os.getenv(token_env_name)
 
 # Prefix dinamis dari Args + Env Subject
-PREFIX = f"{args.prefix}/{SBJ}_qwen"
+PREFIX = f"{args.prefix}/{SBJ}"
 MAX_WORKERS = 8
 
 # Mapping ekstensi berdasarkan FTP mode
