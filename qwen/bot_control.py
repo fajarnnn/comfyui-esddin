@@ -2,86 +2,79 @@ import telebot
 import subprocess
 import os
 import requests
-import re
+import glob
 
 # Konfigurasi
 TOKEN = "8667029481:AAH9hNvk9bIKGdEiFljJa6nnKjpu2LtCEMo"
 ALLOWED_ID = 1471991896
 WORKDIR = "/workspace/comfyui-esddin/qwen"
-TEMP_DIR = "/workspace/runpod-slim/ComfyUI/temp/*"
+TEMP_PATH = "/workspace/runpod-slim/ComfyUI/temp"
 
 bot = telebot.TeleBot(TOKEN)
 
 def get_sys_info():
-    # RAM Info
     ram = subprocess.check_output("free -h | grep Mem | awk '{print $3 \" / \" $2}'", shell=True).decode().strip()
-    
-    # Disk Info (Root /workspace)
     disk = subprocess.check_output("df -h /workspace | awk 'NR==2 {print $3 \" / \" $2 \" (\" $5 \")\"}'", shell=True).decode().strip()
-    
-    # VRAM Info (Nvidia GPU)
     try:
         vram = subprocess.check_output("nvidia-smi --query-gpu=memory.used,memory.total --format=csv,noheader,nounits", shell=True).decode().strip()
         v_used, v_total = vram.split(',')
         vram_info = f"{int(v_used)/1024:.1f}GB / {int(v_total)/1024:.1f}GB"
     except:
         vram_info = "GPU Not Found"
-        
     return ram, vram_info, disk
 
-@bot.message_handler(commands=['start', 'help'])
-def send_welcome(message):
-    msg = (
-        "👋 <b>Halo Bro!</b>\n\n"
-        "Perintah yang tersedia:\n"
-        "1. <code>/run [subj] [dr] [ur] [cnt] [n] [ss] [prf]</code>\n"
-        "2. <code>/info</code> - Cek RAM, VRAM, DISK\n"
-        "3. <code>/reboot</code> - Restart ComfyUI\n"
-        "4. <code>/clean</code> - Hapus isi folder Temp\n"
-        "5. <code>/ping</code> - Cek bot aktif"
-    )
-    bot.reply_to(message, msg, parse_mode="HTML")
-
-@bot.message_handler(commands=['info'])
-def info_device(message):
+@bot.message_handler(commands=['last'])
+def send_last_images(message):
     if message.from_user.id != ALLOWED_ID:
         return
     
-    ram, vram, disk = get_sys_info()
-    msg = (
-        "🖥️ <b>Device Info:</b>\n\n"
-        f"🔹 <b>RAM:</b> <code>{ram}</code>\n"
-        f"🔹 <b>VRAM:</b> <code>{vram}</code>\n"
-        f"🔹 <b>DISK:</b> <code>{disk}</code>"
-    )
-    bot.reply_to(message, msg, parse_mode="HTML")
+    # Cari semua file gambar di folder temp
+    files = glob.glob(f"{TEMP_PATH}/*.png") + glob.glob(f"{TEMP_PATH}/*.jpg") + glob.glob(f"{TEMP_PATH}/*.jpeg")
+    
+    if not files:
+        bot.reply_to(message, "❌ Gak ada file gambar di folder temp, Bro.")
+        return
 
-@bot.message_handler(commands=['ping'])
-def ping_bot(message):
-    bot.reply_to(message, "✅ Bot Standby, Bro!")
+    # Sort berdasarkan waktu modifikasi (paling baru di atas)
+    files.sort(key=os.path.getmtime, reverse=True)
+    
+    # Ambil 2 teratas
+    latest_files = files[:2]
+    
+    bot.reply_to(message, f"📸 Mengirim {len(latest_files)} gambar terbaru dari temp...")
+    
+    for f in latest_files:
+        try:
+            with open(f, 'rb') as img:
+                bot.send_photo(message.chat.id, img, caption=f"File: {os.path.basename(f)}")
+        except Exception as e:
+            bot.send_message(message.chat.id, f"❌ Gagal kirim {os.path.basename(f)}: {e}")
+
+@bot.message_handler(commands=['info'])
+def info_device(message):
+    if message.from_user.id != ALLOWED_ID: return
+    ram, vram, disk = get_sys_info()
+    msg = f"🖥️ <b>Device Info:</b>\n\n🔹 <b>RAM:</b> <code>{ram}</code>\n🔹 <b>VRAM:</b> <code>{vram}</code>\n🔹 <b>DISK:</b> <code>{disk}</code>"
+    bot.reply_to(message, msg, parse_mode="HTML")
 
 @bot.message_handler(commands=['clean'])
 def clean_temp(message):
-    if message.from_user.id != ALLOWED_ID:
-        return
-    os.system(f"rm -f {TEMP_DIR}")
+    if message.from_user.id != ALLOWED_ID: return
+    os.system(f"rm -f {TEMP_PATH}/*")
     bot.reply_to(message, "🧹 <b>Temp Cleaned!</b>", parse_mode="HTML")
 
 @bot.message_handler(commands=['reboot'])
 def reboot_comfy(message):
-    if message.from_user.id != ALLOWED_ID:
-        return
-    bot.reply_to(message, "🔄 <b>Rebooting ComfyUI...</b>", parse_mode="HTML")
+    if message.from_user.id != ALLOWED_ID: return
     try:
         requests.get("http://127.0.0.1:8188/manager/reboot", timeout=10)
-        bot.reply_to(message, "✅ Reboot command sent!")
+        bot.reply_to(message, "🔄 Reboot command sent!")
     except:
         bot.reply_to(message, "❌ ComfyUI Offline.")
 
 @bot.message_handler(commands=['run'])
 def handle_run(message):
-    if message.from_user.id != ALLOWED_ID:
-        return
+    if message.from_user.id != ALLOWED_ID: return
     try:
         parts = message.text.split()
         if len(parts) < 8:
