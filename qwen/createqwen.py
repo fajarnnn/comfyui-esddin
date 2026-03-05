@@ -2,7 +2,7 @@ import json
 import os
 import argparse
 
-def create_comfy_json(subject, is_full=False, is_solo=True, output_filename="workflow_output.json"):
+def create_comfy_json(subject, is_full=False, is_solo=True, prf_num=100000, output_filename="workflow_output.json"):
     """
     Membuat file JSON ComfyUI dengan format lengkap sesuai template.
     """
@@ -22,7 +22,7 @@ def create_comfy_json(subject, is_full=False, is_solo=True, output_filename="wor
     else:
         spath = "group"
         SMODE = "GROUP"
-
+    PRFNUM = prf_num
     # 3. Template Workflow (Format Lengkap)
     workflow = {
         "prompt": {
@@ -128,7 +128,7 @@ def create_comfy_json(subject, is_full=False, is_solo=True, output_filename="wor
                 "_meta": {"title": "🔧 Console Debug"}
             },
             "546": {
-                "inputs": {"value": "300000"},
+                "inputs": {"value": f"{PRFNUM}"},
                 "class_type": "easy string",
                 "_meta": {"title": "PREFIX_NUM"}
             },
@@ -464,6 +464,7 @@ if __name__ == "__main__":
     parser.add_argument("--subject", type=str, required=True, help="Subject name")
     parser.add_argument("--isFULL", type=str, default="false", help="true or false")
     parser.add_argument("--isSOLO", type=str, default="true", help="true or false")
+    parser.add_argument("--prf", type=int, default=100000, help="Pref Number")
     parser.add_argument("--out", type=str, default=None, help="Output filename")
 
     args = parser.parse_args()
@@ -475,5 +476,5 @@ if __name__ == "__main__":
     # Default output path
     out_file = args.out if args.out else f"{os.getenv("JF")}.json"
 
-    create_comfy_json(args.subject, is_full=f_bool, is_solo=s_bool, output_filename=out_file)
+    create_comfy_json(args.subject, is_full=f_bool, is_solo=s_bool, prf_num=args.prf, output_filename=out_file)
     
