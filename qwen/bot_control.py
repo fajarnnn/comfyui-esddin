@@ -212,24 +212,31 @@ def handle_install(message):
     
     try:
         parts = message.text.split()
-        # Kita butuh minimal 2 (cmd + hf_token)
         if len(parts) < 2:
             bot.reply_to(message, "⚠️ Format: /install <HF_TOKEN> [TELE_TOKEN] [TELE_ID]")
             return
         
         hf_token = parts[1]
-        # Jika param ke-3 (tele_token) tidak ada, pakai TOKEN bot saat ini
         tele_token = parts[2] if len(parts) > 2 else TOKEN
-        # Jika param ke-4 (tele_id) tidak ada, pakai ID pengirim saat ini
         tele_id = parts[3] if len(parts) > 3 else str(message.from_user.id)
         
-        bot.reply_to(message, f"⚙️ <b>Memulai Instalasi...</b>\n\nHF: <code>{hf_token[:6]}***</code>\nTele: <code>{tele_id}</code>", parse_mode="HTML")
-
-        # Panggil wrapper script
-        cmd = ["bash", "run_ins.sh", hf_token, tele_token, tele_id]
+        # Path absolut agar tidak nyasar
+        wrapper_path = "/workspace/comfyui-esddin/run_ins.sh"
+        log_path = "/workspace/comfyui-esddin/qwen/install_debug.log"
         
-        # Jalankan di background agar bot tidak freeze
-        with open("install_debug.log", "a") as f_log:
+        # Pastikan file script ada sebelum dijalankan
+        if not os.path.exists(wrapper_path):
+            bot.reply_to(message, f"❌ Script tidak ditemukan di:\n<code>{wrapper_path}</code>", parse_mode="HTML")
+            return
+
+        bot.reply_to(message, f"⚙️ <b>Memulai Instalasi...</b>\n\nLog: <code>qwen/install_debug.log</code>", parse_mode="HTML")
+
+        # Panggil wrapper script dengan path absolut
+        cmd = ["bash", wrapper_path, hf_token, tele_token, tele_id]
+        
+        # Jalankan di background, log ditaruh di folder qwen
+        with open(log_path, "a") as f_log:
+            # Tetap gunakan WORKDIR (folder qwen) sebagai tempat eksekusi
             subprocess.Popen(cmd, cwd=WORKDIR, stdout=f_log, stderr=f_log)
             
     except Exception as e:
