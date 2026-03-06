@@ -147,5 +147,63 @@ def count_files(message):
     except Exception as e:
         bot.reply_to(message, f"❌ Error Count: {str(e)}")
 
+# --- Perintah: /delete (Hapus Folder Subject) ---
+@bot.message_handler(commands=['delete'])
+def delete_subject_folder(message):
+    if message.from_user.id != ALLOWED_ID:
+        return
+    try:
+        parts = message.text.split()
+        # Format: /delete <subject>
+        if len(parts) < 2:
+            bot.reply_to(message, "⚠️ Format: <code>/delete subject_name</code>", parse_mode="HTML")
+            return
+        
+        subject = parts[1]
+        target_path = f"/workspace/runpod-slim/ComfyUI/input/renamed/{subject}"
+        
+        if not os.path.exists(target_path):
+            bot.reply_to(message, f"❌ Folder tidak ditemukan:\n<code>{target_path}</code>", parse_mode="HTML")
+            return
+
+        # Eksekusi penghapusan folder dan isinya (rm -rf)
+        import shutil
+        shutil.rmtree(target_path)
+        
+        bot.reply_to(message, f"🗑️ <b>Folder Deleted:</b>\n<code>{subject}</code>", parse_mode="HTML")
+
+    except Exception as e:
+        bot.reply_to(message, f"❌ Error Delete: {str(e)}")
+
+# --- Perintah: /list (Daftar Folder Subject) ---
+@bot.message_handler(commands=['list'])
+def list_subjects(message):
+    if message.from_user.id != ALLOWED_ID:
+        return
+    try:
+        base_path = "/workspace/runpod-slim/ComfyUI/input/renamed"
+        
+        if not os.path.exists(base_path):
+            bot.reply_to(message, "❌ Direktori utama tidak ditemukan.", parse_mode="HTML")
+            return
+
+        # Ambil daftar folder saja (abaikan file)
+        subjects = [f for f in os.listdir(base_path) if os.path.isdir(os.path.join(base_path, f))]
+        
+        if not subjects:
+            bot.reply_to(message, "📂 <b>Direktori Kosong</b>", parse_mode="HTML")
+            return
+
+        # Urutkan secara alfabet
+        subjects.sort()
+        
+        response = "📂 <b>Daftar Subject:</b>\n\n"
+        for i, sub in enumerate(subjects, 1):
+            response += f"{i}. <code>{sub}</code>\n"
+            
+        bot.reply_to(message, response, parse_mode="HTML")
+
+    except Exception as e:
+        bot.reply_to(message, f"❌ Error List: {str(e)}")
 print("--- BOT IS RUNNING ---")
 bot.infinity_polling()
