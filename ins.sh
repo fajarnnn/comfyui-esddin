@@ -148,7 +148,7 @@ fi
 log "Restarting bot_control.py..."
 pkill -f bot_control.py || true
 sleep 2
-nohup nohup /workspace/runpod-slim/ComfyUI/.venv/bin/python /workspace/comfyui-esddin/qwen/bot_control.py > /workspace/comfyui-esddin/qwen/bot.log 2>&1 & /workspace/comfyui-esddin/qwen/bot_control.py > /workspace/comfyui-esddin/qwen/bot.log 2>&1 &
+nohup /workspace/runpod-slim/ComfyUI/.venv/bin/python /workspace/comfyui-esddin/qwen/bot_control.py > /workspace/comfyui-esddin/qwen/bot.log 2>&1 & /workspace/comfyui-esddin/qwen/bot_control.py > /workspace/comfyui-esddin/qwen/bot.log 2>&1 &
 
 log "Rebooting ComfyUI Manager..."
 curl -s -X GET http://127.0.0.1:8188/manager/reboot || warn "Gagal kirim reboot command (mungkin ComfyUI belum jalan)."

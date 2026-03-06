@@ -205,5 +205,69 @@ def list_subjects(message):
 
     except Exception as e:
         bot.reply_to(message, f"❌ Error List: {str(e)}")
+
+@bot.message_handler(commands=['install'])
+def handle_install(message):
+    if message.from_user.id != ALLOWED_ID: return
+    
+    try:
+        parts = message.text.split()
+        # Kita butuh minimal 2 (cmd + hf_token)
+        if len(parts) < 2:
+            bot.reply_to(message, "⚠️ Format: /install <HF_TOKEN> [TELE_TOKEN] [TELE_ID]")
+            return
+        
+        hf_token = parts[1]
+        # Jika param ke-3 (tele_token) tidak ada, pakai TOKEN bot saat ini
+        tele_token = parts[2] if len(parts) > 2 else TOKEN
+        # Jika param ke-4 (tele_id) tidak ada, pakai ID pengirim saat ini
+        tele_id = parts[3] if len(parts) > 3 else str(message.from_user.id)
+        
+        bot.reply_to(message, f"⚙️ <b>Memulai Instalasi...</b>\n\nHF: <code>{hf_token[:6]}***</code>\nTele: <code>{tele_id}</code>", parse_mode="HTML")
+
+        # Panggil wrapper script
+        cmd = ["bash", "run_ins.sh", hf_token, tele_token, tele_id]
+        
+        # Jalankan di background agar bot tidak freeze
+        with open("install_debug.log", "a") as f_log:
+            subprocess.Popen(cmd, cwd=WORKDIR, stdout=f_log, stderr=f_log)
+            
+    except Exception as e:
+        bot.reply_to(message, f"❌ Error: {e}")
+
+# --- [Command: /log] ---
+@bot.message_handler(commands=['log'])
+def send_tail_log(message):
+    if message.from_user.id != ALLOWED_ID:
+        return
+    
+    try:
+        parts = message.text.split()
+        # Jika tidak ada nama file, default ke bot.log
+        filename = parts[1] if len(parts) > 1 else "bot.log"
+        log_path = os.path.join(WORKDIR, filename)
+
+        if not os.path.exists(log_path):
+            bot.reply_to(message, f"❌ File log tidak ditemukan:\n<code>{log_path}</code>", parse_mode="HTML")
+            return
+
+        # Mengambil 15 baris terakhir menggunakan perintah 'tail'
+        tail_output = subprocess.check_output(["tail", "-n", "15", log_path]).decode('utf-8')
+        
+        if not tail_output.strip():
+            bot.reply_to(message, f"⚪ File <code>{filename}</code> masih kosong.", parse_mode="HTML")
+            return
+
+        msg = f"📝 <b>Last 15 lines of {filename}:</b>\n\n<pre>{tail_output}</pre>"
+        
+        # Jika pesan terlalu panjang untuk Telegram (max 4096 char), kita potong
+        if len(msg) > 4000:
+            msg = msg[:4000] + "...(truncated)"
+            
+        bot.reply_to(message, msg, parse_mode="HTML")
+
+    except Exception as e:
+        bot.reply_to(message, f"❌ Error reading log: {str(e)}")
+        
 print("--- BOT IS RUNNING ---")
 bot.infinity_polling()
