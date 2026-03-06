@@ -97,7 +97,7 @@ def handle_run(message):
         env = os.environ.copy()
         env["COUNT"] = parts[4]
         
-        cmd = ["/bin/bash","-i", "main.sh", "-s", subject, "-dr", parts[2], "-m", "image" ,"-ur", parts[3], "-n", parts[5], "-ss", parts[6], "-p", parts[7]]
+        cmd = ["/bin/bash","main.sh", "-s", subject, "-dr", parts[2], "-m", "image" ,"-ur", parts[3], "-n", parts[5], "-ss", parts[6], "-p", parts[7]]
         subprocess.Popen(cmd, cwd=WORKDIR, env=env)
     except Exception as e: 
         bot.reply_to(message, f"❌ Error Run: {e}")
