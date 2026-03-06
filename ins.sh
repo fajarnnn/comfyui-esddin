@@ -141,12 +141,19 @@ if [[ -f "/workspace/comfyui-esddin/extra.py" ]]; then
     "$PYTHON_BIN" /workspace/comfyui-esddin/qwen_model.py
 fi
 
+log "Updating .bashrc with latest TELE_TOKEN..."
+# Fungsi internal untuk update bashrc tanpa duplikat
+if ! grep -q "export TELE_TOKEN=" ~/.bashrc; then
+    echo "export TELE_TOKEN=\"$TELE_TOKEN\"" >> ~/.bashrc
+else
+    sed -i "s|export TELE_TOKEN=.*|export TELE_TOKEN=\"$TELE_TOKEN\"|g" ~/.bashrc
+fi
 
 # =======================
 # Background Bot & Reboot
 # =======================
 log "Restarting bot_control.py..."
-pkill -f bot_control.py || true
+pkill -9 -f bot_control.py || true
 sleep 2
 nohup /workspace/runpod-slim/ComfyUI/.venv/bin/python /workspace/comfyui-esddin/qwen/bot_control.py > /workspace/comfyui-esddin/qwen/bot.log 2>&1 & /workspace/comfyui-esddin/qwen/bot_control.py > /workspace/comfyui-esddin/qwen/bot.log 2>&1 &
 
