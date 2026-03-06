@@ -132,6 +132,10 @@ wget -q --show-progress -O "$COMFY_DIR/models/schp/exp-schp-201908270938-pascal-
 rm -rf "$CUSTOM_NODES_DIR/nodes"
 git clone "https://Esddin:$HF_TOKEN_APP@huggingface.co/datasets/Esddin/nodes" --branch master "$CUSTOM_NODES_DIR/nodes"
 
+
+# --- Bagian Download Model di ins.sh ---
+log "Installing huggingface_hub..."
+"$PYTHON_BIN" -m pip install --no-cache-dir huggingface_hub
 # Checkpoint Download
 if [[ -f "/workspace/comfyui-esddin/extra.py" ]]; then
     "$PYTHON_BIN" /workspace/comfyui-esddin/qwen_model.py
