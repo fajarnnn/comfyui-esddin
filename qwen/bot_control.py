@@ -24,7 +24,6 @@ bot = telebot.TeleBot(TOKEN)
 def send_last_images(message):
     if message.from_user.id != ALLOWED_ID:
         return
-    
     try:
         # Cari semua PNG
         files = glob.glob(os.path.join(TEMP_PATH, "*.png"))
@@ -98,7 +97,7 @@ def handle_run(message):
         env = os.environ.copy()
         env["COUNT"] = parts[4]
         
-        cmd = ["/bin/bash", "main.sh", "-s", subject, "-dr", parts[2], "-m", "image" ,"-ur", parts[3], "-n", parts[5], "-ss", parts[6], "-p", parts[7]]
+        cmd = ["/bin/bash","-i", "main.sh", "-s", subject, "-dr", parts[2], "-m", "image" ,"-ur", parts[3], "-n", parts[5], "-ss", parts[6], "-p", parts[7]]
         subprocess.Popen(cmd, cwd=WORKDIR, env=env)
     except Exception as e: 
         bot.reply_to(message, f"❌ Error Run: {e}")
