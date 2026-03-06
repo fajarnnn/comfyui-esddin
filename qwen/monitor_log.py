@@ -5,10 +5,11 @@ import os
 import re
 import sys
 
-# --- Konfigurasi ---
-LOG_FILE = "/workspace/runpod-slim/comfyui.log"
-TELE_TOKEN = "8667029481:AAH9hNvk9bIKGdEiFljJa6nnKjpu2LtCEMo"
-TELE_ID = "1471991896"
+# --- Konfigurasi dari Environment Variables ---
+# os.getenv('NAMA_VAR', 'DEFAULT_VALUE')
+LOG_FILE = os.getenv('LOG_FILE', "/workspace/runpod-slim/comfyui.log")
+TELE_TOKEN = os.getenv('TELE_TOKEN')
+TELE_ID = os.getenv('TELE_ID', "1471991896") # Default ID tetap ada jika tidak di-set di bash
 
 def log_debug(msg):
     # Print ke terminal/monitor.log secara instan
@@ -16,6 +17,10 @@ def log_debug(msg):
     print(f"[{timestamp}] {msg}", flush=True)
 
 def send_tele(message):
+    if not TELE_TOKEN:
+        log_debug("ERROR: TELE_TOKEN tidak ditemukan di environment variables!")
+        return
+
     url = f"https://api.telegram.org/bot{TELE_TOKEN}/sendMessage"
     payload = {"chat_id": TELE_ID, "text": message, "parse_mode": "HTML"}
     try:
@@ -28,9 +33,13 @@ def monitor():
     log_debug("!!! MONITOR SCRIPT STARTED !!!")
     log_debug(f"Targeting log: {LOG_FILE}")
     
+    # Validasi Awal
+    if not TELE_TOKEN:
+        log_debug("CRITICAL: TELE_TOKEN is empty. Pastikan sudah di-export dari bash.")
+    
     while True:
         if not os.path.exists(LOG_FILE):
-            log_debug("CRITICAL: Log file target tidak ditemukan di path!")
+            log_debug(f"CRITICAL: Log file target tidak ditemukan di {LOG_FILE}!")
         else:
             try:
                 # Ambil snapshot log
