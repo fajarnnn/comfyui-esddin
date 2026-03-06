@@ -87,6 +87,7 @@ export TELE_TOKEN="$TELE_TOKEN" # Suntik ke session agar bot bisa langsung baca
 echo "---------------------------------------------------------"
 echo "Variables summarized:"
 echo "Subject    : $SUBJECT"
+echo "JSON    : $JF"
 echo "Tele Token : ${TELE_TOKEN:0:5}*** (Hidden)"
 echo "---------------------------------------------------------"
 
