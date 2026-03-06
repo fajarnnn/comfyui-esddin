@@ -6,11 +6,8 @@ import requests
 import glob
 
 # --- Konfigurasi ---
-# Mengambil TOKEN dari env 'TELE_TOKEN' (bukan SUBJECT)
 TOKEN = os.getenv("TELE_TOKEN")
-# Ambil ID dari env, jika tidak ada pakai ID default kamu
 ALLOWED_ID = int(os.getenv("TELE_ID", 1471991896))
-
 WORKDIR = "/workspace/comfyui-esddin/qwen"
 TEMP_PATH = "/workspace/runpod-slim/ComfyUI/temp"
 
@@ -20,19 +17,17 @@ if not TOKEN:
 
 bot = telebot.TeleBot(TOKEN)
 
+# --- Perintah: /last ---
 @bot.message_handler(commands=['last'])
 def send_last_images(message):
     if message.from_user.id != ALLOWED_ID:
         return
     try:
-        # Cari semua PNG
         files = glob.glob(os.path.join(TEMP_PATH, "*.png"))
-        
         if not files:
             bot.send_message(message.chat.id, f"❌ Folder kosong di path:\n<code>{TEMP_PATH}</code>", parse_mode="HTML")
             return
 
-        # Sort berdasarkan waktu modifikasi (terbaru di atas)
         files.sort(key=os.path.getmtime, reverse=True)
         latest_files = files[:6]
         
@@ -52,10 +47,11 @@ def send_last_images(message):
     except Exception as e:
         bot.send_message(message.chat.id, f"❌ Error detect: {str(e)}")
 
-# --- Perintah Lain ---
+# --- Perintah: /info ---
 @bot.message_handler(commands=['info'])
 def info_device(message):
-    if message.from_user.id != ALLOWED_ID: return
+    if message.from_user.id != ALLOWED_ID:
+        return
     try:
         ram = subprocess.check_output("free -h | grep Mem | awk '{print $3 \" / \" $2}'", shell=True).decode().strip()
         disk = subprocess.check_output("df -h /workspace | awk 'NR==2 {print $3 \" / \" $2 \" (\" $5 \")\"}'", shell=True).decode().strip()
@@ -63,55 +59,60 @@ def info_device(message):
             vram = subprocess.check_output("nvidia-smi --query-gpu=memory.used,memory.total --format=csv,noheader,nounits", shell=True).decode().strip()
             v_used, v_total = vram.split(',')
             vram_info = f"{int(v_used)/1024:.1f}GB / {int(v_total)/1024:.1f}GB"
-        except: vram_info = "GPU Error"
+        except:
+            vram_info = "GPU Error"
         bot.reply_to(message, f"🖥️ <b>Info:</b>\nRAM: {ram}\nVRAM: {vram_info}\nDISK: {disk}", parse_mode="HTML")
     except Exception as e:
         bot.reply_to(message, f"❌ Error Info: {e}")
 
+# --- Perintah: /clean ---
 @bot.message_handler(commands=['clean'])
 def clean_temp(message):
-    if message.from_user.id != ALLOWED_ID: return
+    if message.from_user.id != ALLOWED_ID:
+        return
     os.system(f"rm -f {TEMP_PATH}/*")
     bot.reply_to(message, "🧹 Temp Cleaned!")
 
+# --- Perintah: /reboot ---
 @bot.message_handler(commands=['reboot'])
 def reboot_comfy(message):
-    if message.from_user.id != ALLOWED_ID: return
+    if message.from_user.id != ALLOWED_ID:
+        return
     try:
         requests.get("http://127.0.0.1:8188/manager/reboot", timeout=5)
         bot.reply_to(message, "🔄 Rebooting...")
     except: 
         bot.reply_to(message, "✅ Perintah dikirim (Server mungkin sedang restart).")
 
+# --- Perintah: /run ---
 @bot.message_handler(commands=['run'])
 def handle_run(message):
-    if message.from_user.id != ALLOWED_ID: return
+    if message.from_user.id != ALLOWED_ID:
+        return
     try:
         parts = message.text.split()
         if len(parts) < 8:
             bot.reply_to(message, "⚠️ Format: /run subj dr ur cnt n ss prf")
             return
+        
         subject = parts[1]
         bot.reply_to(message, f"🚀 <b>Running {subject}...</b>", parse_mode="HTML")
         
         env = os.environ.copy()
         env["COUNT"] = parts[4]
         
-        cmd = ["/bin/bash","main.sh", "-s", subject, "-dr", parts[2], "-m", "image" ,"-ur", parts[3], "-n", parts[5], "-ss", parts[6], "-p", parts[7]]
+        cmd = ["/bin/bash", "main.sh", "-s", subject, "-dr", parts[2], "-m", "image", "-ur", parts[3], "-n", parts[5], "-ss", parts[6], "-p", parts[7]]
         subprocess.Popen(cmd, cwd=WORKDIR, env=env)
     except Exception as e: 
         bot.reply_to(message, f"❌ Error Run: {e}")
-import glob
 
-# ... (kode bot yang sudah ada)
-
+# --- Perintah: /count ---
 @bot.message_handler(commands=['count'])
 def count_files(message):
-    if message.from_user.id != ALLOWED_ID: return
-    
+    if message.from_user.id != ALLOWED_ID:
+        return
     try:
         parts = message.text.split()
-        # Format: /count <subject>
         if len(parts) < 2:
             bot.reply_to(message, "⚠️ Format: <code>/count subject_name</code>", parse_mode="HTML")
             return
@@ -123,7 +124,6 @@ def count_files(message):
             bot.reply_to(message, f"❌ Folder subject tidak ditemukan:\n<code>{base_path}</code>", parse_mode="HTML")
             return
 
-        # List subfolder dan mode yang ingin dicek
         subfolders = ["full_body", "half_body"]
         modes = ["solo", "group"]
         
@@ -133,14 +133,11 @@ def count_files(message):
         for sub in subfolders:
             response += f"\n📂 <b>{sub.replace('_', ' ').title()}</b>\n"
             for m in modes:
-                # Path: /workspace/.../{subject}/{subfolder}/{mode}/*
                 path = os.path.join(base_path, sub, m, "*")
-                # Menghitung hanya file (bukan folder)
                 files = [f for f in glob.glob(path) if os.path.isfile(f)]
                 count = len(files)
                 total_all += count
                 
-                # Tambah baris status per mode
                 status_icon = "✅" if count > 0 else "⚠️"
                 response += f"  ├ {m.capitalize()}: {count} {status_icon}\n"
         
