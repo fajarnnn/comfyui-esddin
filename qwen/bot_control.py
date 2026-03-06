@@ -101,6 +101,54 @@ def handle_run(message):
         subprocess.Popen(cmd, cwd=WORKDIR, env=env)
     except Exception as e: 
         bot.reply_to(message, f"❌ Error Run: {e}")
+import glob
+
+# ... (kode bot yang sudah ada)
+
+@bot.message_handler(commands=['count'])
+def count_files(message):
+    if message.from_user.id != ALLOWED_ID: return
+    
+    try:
+        parts = message.text.split()
+        # Format: /count <subject>
+        if len(parts) < 2:
+            bot.reply_to(message, "⚠️ Format: <code>/count subject_name</code>", parse_mode="HTML")
+            return
+        
+        subject = parts[1]
+        base_path = f"/workspace/runpod-slim/ComfyUI/input/renamed/{subject}"
+        
+        if not os.path.exists(base_path):
+            bot.reply_to(message, f"❌ Folder subject tidak ditemukan:\n<code>{base_path}</code>", parse_mode="HTML")
+            return
+
+        # List subfolder dan mode yang ingin dicek
+        subfolders = ["full_body", "half_body"]
+        modes = ["solo", "group"]
+        
+        response = f"📊 <b>File Count for: {subject}</b>\n"
+        total_all = 0
+
+        for sub in subfolders:
+            response += f"\n📂 <b>{sub.replace('_', ' ').title()}</b>\n"
+            for m in modes:
+                # Path: /workspace/.../{subject}/{subfolder}/{mode}/*
+                path = os.path.join(base_path, sub, m, "*")
+                # Menghitung hanya file (bukan folder)
+                files = [f for f in glob.glob(path) if os.path.isfile(f)]
+                count = len(files)
+                total_all += count
+                
+                # Tambah baris status per mode
+                status_icon = "✅" if count > 0 else "⚠️"
+                response += f"  ├ {m.capitalize()}: {count} {status_icon}\n"
+        
+        response += f"\nTotal Semua: <b>{total_all}</b> file."
+        bot.reply_to(message, response, parse_mode="HTML")
+
+    except Exception as e:
+        bot.reply_to(message, f"❌ Error Count: {str(e)}")
 
 print("--- BOT IS RUNNING ---")
 bot.infinity_polling()
