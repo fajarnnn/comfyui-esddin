@@ -133,10 +133,10 @@ rm -rf "$CUSTOM_NODES_DIR/nodes"
 git clone "https://Esddin:$HF_TOKEN_APP@huggingface.co/datasets/Esddin/nodes" --branch master "$CUSTOM_NODES_DIR/nodes"
 
 # Checkpoint Download
-mkdir -p "$COMFY_DIR/models/checkpoints"
-curl -L -H "Authorization: Bearer $HF_TOKEN_APP" \
-"https://huggingface.co/Phr00t/Qwen-Image-Edit-Rapid-AIO/resolve/main/v19/Qwen-Rapid-AIO-NSFW-v19.safetensors" \
--o "$COMFY_DIR/models/checkpoints/Qwen-Rapid-AIO-NSFW-v19.safetensors"
+if [[ -f "/workspace/comfyui-esddin/extra.py" ]]; then
+    "$PYTHON_BIN" /workspace/comfyui-esddin/qwen_model.py
+fi
+
 
 # =======================
 # Background Bot & Reboot
