@@ -273,5 +273,57 @@ def handle_update(message):
 
     except Exception as e:
         bot.reply_to(message, f"❌ Error Update: <code>{str(e)}</code>", parse_mode="HTML")
+        
+# --- Perintah: /printrun (Generate Macro Commands) ---
+@bot.message_handler(commands=['printrun'])
+def handle_printrun(message):
+    if message.from_user.id != ALLOWED_ID: return
+    try:
+        parts = message.text.split()
+        if len(parts) < 2:
+            bot.reply_to(message, "⚠️ Format: <code>/printrun subject_name</code>", parse_mode="HTML")
+            return
+        
+        subject = parts[1]
+        base_path = f"/workspace/runpod-slim/ComfyUI/input/renamed/{subject}"
+        
+        if not os.path.exists(base_path):
+            bot.reply_to(message, f"❌ Subject tidak ditemukan:\n<code>{base_path}</code>", parse_mode="HTML")
+            return
+
+        # Fungsi helper untuk hitung file
+        def get_count(sub, mode):
+            p = os.path.join(base_path, sub, mode, "*")
+            return len([f for f in glob.glob(p) if os.path.isfile(f)])
+
+        # Ambil data count
+        fb_solo = get_count("full_body", "solo")
+        fb_group = get_count("full_body", "group")
+        hb_solo = get_count("half_body", "solo")
+        hb_group = get_count("half_body", "group")
+
+        # Susun response (Semua dibungkus <code> agar sekali tap langsung copy)
+        res = f"🚀 <b>Macro Run for: {subject}</b>\n\n"
+        
+        # 1. Full Body -> Solo
+        res += f"<b>Full Body - Solo ({fb_solo})</b>\n"
+        res += f"<code>/run {subject} nt nt {fb_solo} true true 100000</code>\n\n"
+        
+        # 2. Full Body -> Group
+        res += f"<b>Full Body - Group ({fb_group})</b>\n"
+        res += f"<code>/run {subject} nt nt {fb_group} true false 200000</code>\n\n"
+        
+        # 3. Half Body - Solo
+        res += f"<b>Half Body - Solo ({hb_solo})</b>\n"
+        res += f"<code>/run {subject} nt nt {hb_solo} false true 300000</code>\n\n"
+        
+        # 4. Half Body - Group
+        res += f"<b>Half Body - Group ({hb_group})</b>\n"
+        res += f"<code>/run {subject} nt nt {hb_group} false false 400000</code>"
+
+        bot.reply_to(message, res, parse_mode="HTML")
+
+    except Exception as e:
+        bot.reply_to(message, f"❌ Error PrintRun: <code>{str(e)}</code>", parse_mode="HTML")
 print("--- BOT IS RUNNING ---")
 bot.infinity_polling()
