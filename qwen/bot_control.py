@@ -240,6 +240,7 @@ def send_tail_log(message):
         bot.reply_to(message, f"❌ Error Log: <code>{str(e)}</code>", parse_mode="HTML")
 
 # --- Perintah: /update (Git Pull & Restart Bot) ---
+# --- Perintah: /update (Git Pull & Run via runbot.sh) ---
 @bot.message_handler(commands=['update'])
 def handle_update(message):
     if message.from_user.id != ALLOWED_ID:
@@ -247,33 +248,23 @@ def handle_update(message):
     
     try:
         repo_path = "/workspace/comfyui-esddin"
-        bot_script = "/workspace/comfyui-esddin/qwen/bot_control.py"
-        venv_python = "/workspace/runpod-slim/ComfyUI/.venv/bin/python"
-        log_file = "/workspace/comfyui-esddin/qwen/bot.log"
+        runbot_path = "/workspace/comfyui-esddin/runbot.sh"
 
         bot.reply_to(message, "🔄 <b>Updating code from Git...</b>", parse_mode="HTML")
 
         # 1. Git Pull
         pull_output = subprocess.check_output(["git", "-C", repo_path, "pull"]).decode("utf-8")
-        
-        # Kirim info hasil pull agar bisa dicopy
         bot.send_message(message.chat.id, f"📥 <b>Git Output:</b>\n<code>{pull_output}</code>", parse_mode="HTML")
 
-        bot.send_message(message.chat.id, "♻️ <b>Restarting Bot...</b>", parse_mode="HTML")
-
-        # 2. Perintah Restart yang Tahan Banting
-        # Kita gabungkan semua perintah dalam satu baris bash 
-        # dan jalankan dengan nohup agar tidak ikut mati saat pkill
-        restart_cmd = (
-            f"pkill -9 -f bot_control.py || true && "
-            f"sleep 2 && "
-            f"nohup {venv_python} {bot_script} > {log_file} 2>&1 &"
-        )
+        # 2. Eksekusi runbot.sh menggunakan source
+        # Kita bungkus dalam bash -c agar environment ter-export dengan benar
+        # Gunakan TOKEN yang sedang dipakai bot saat ini sebagai parameter $1
+        bot.send_message(message.chat.id, "♻️ <b>Executing runbot.sh & Restarting...</b>", parse_mode="HTML")
         
-        # Gunakan shell=True dan lepaskan prosesnya (start_new_session)
-        subprocess.Popen(restart_cmd, shell=True, cwd=WORKDIR, start_new_session=True)
+        restart_cmd = f"source {runbot_path} {TOKEN}"
         
-        bot.send_message(message.chat.id, "♻️ <b>Bot dimatikan dan akan nyala kembali...</b>", parse_mode="HTML")
+        # start_new_session agar proses runbot tidak mati saat bot ini kena pkill
+        subprocess.Popen(["/bin/bash", "-c", restart_cmd], cwd=repo_path, start_new_session=True)
 
     except Exception as e:
         bot.reply_to(message, f"❌ Error Update: <code>{str(e)}</code>", parse_mode="HTML")

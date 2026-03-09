@@ -22,7 +22,8 @@ add_to_bashrc "TELE_TOKEN" "$TOKEN_VALUE"
 # 4. Jalankan bot di background (Versi bersih tanpa duplikasi nohup)
 # Kita pakai $TOKEN_VALUE langsung agar session sekarang langsung jalan
 export TELE_TOKEN="$TOKEN_VALUE"
-
+pkill -9 -f bot_control.py || true
+sleep 2
 log "Starting bot_control.py in background..."
 nohup python3 /workspace/comfyui-esddin/qwen/bot_control.py > /workspace/comfyui-esddin/qwen/bot.log 2>&1 &
 
