@@ -321,37 +321,35 @@ def handle_printrun(message):
     except Exception as e:
         bot.reply_to(message, f"❌ Error PrintRun: <code>{str(e)}</code>", parse_mode="HTML")
         
-# --- Perintah: /inspect (Cek Status ComfyUI) ---
+# --- Perintah: /inspect (Cek Status ComfyUI - Path Fixed) ---
 @bot.message_handler(commands=['inspect'])
 def handle_inspect(message):
     if message.from_user.id != ALLOWED_ID: return
     
     try:
-        # Path ke file comfy_inspect.py
-        inspect_script = os.path.join(WORKDIR, "comfy_inspect.py")
+        # Path absolut sesuai instruksi terbaru
+        inspect_script = "/workspace/comfyui-esddin/comfy_inspect.py"
+        venv_python = "/workspace/runpod-slim/ComfyUI/.venv/bin/python"
         
         if not os.path.exists(inspect_script):
-            bot.reply_to(message, f"❌ File tidak ditemukan:\n<code>{inspect_script}</code>", parse_mode="HTML")
+            bot.reply_to(message, f"❌ File tidak ditemukan di:\n<code>{inspect_script}</code>", parse_mode="HTML")
             return
 
         bot.reply_to(message, "🔍 <b>Inspecting ComfyUI Status...</b>", parse_mode="HTML")
 
-        # Jalankan script dan tangkap outputnya
-        # Kita gunakan python3 dari venv agar library requests dll terbaca
-        venv_python = "/workspace/runpod-slim/ComfyUI/.venv/bin/python"
+        # Jalankan script menggunakan python dari venv
         output = subprocess.check_output([venv_python, inspect_script], stderr=subprocess.STDOUT).decode("utf-8")
 
-        # Bungkus dalam <pre> agar format tabel/spasi tetap rapi seperti di terminal
+        # Tampilkan hasil dengan tag <pre> agar formatting terminal tidak berantakan
         response = f"📋 <b>ComfyUI Inspector Result:</b>\n<pre>{output}</pre>"
         
-        # Kirim respons (potong jika terlalu panjang)
+        # Telegram punya limit 4096 karakter per pesan
         if len(response) > 4000:
             response = response[:4000] + "\n...(truncated)"
             
         bot.reply_to(message, response, parse_mode="HTML")
 
     except subprocess.CalledProcessError as e:
-        # Jika script inspect error (misal ComfyUI mati)
         error_out = e.output.decode("utf-8")
         bot.reply_to(message, f"❌ <b>Inspect Error:</b>\n<pre>{error_out}</pre>", parse_mode="HTML")
     except Exception as e:
