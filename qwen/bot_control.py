@@ -238,6 +238,40 @@ def send_tail_log(message):
         bot.reply_to(message, msg if len(msg) < 4000 else msg[:4000], parse_mode="HTML")
     except Exception as e:
         bot.reply_to(message, f"❌ Error Log: <code>{str(e)}</code>", parse_mode="HTML")
+
+# --- Perintah: /update (Git Pull & Restart Bot) ---
+@bot.message_handler(commands=['update'])
+def handle_update(message):
+    if message.from_user.id != ALLOWED_ID:
+        return
+    
+    try:
+        repo_path = "/workspace/comfyui-esddin"
+        bot_script = "/workspace/comfyui-esddin/qwen/bot_control.py"
+        venv_python = "/workspace/runpod-slim/ComfyUI/.venv/bin/python"
+        log_file = "/workspace/comfyui-esddin/qwen/bot.log"
+
+        bot.reply_to(message, "🔄 <b>Updating code from Git...</b>", parse_mode="HTML")
+
+        # 1. Git Pull
+        pull_output = subprocess.check_output(["git", "-C", repo_path, "pull"]).decode("utf-8")
         
+        # Kirim info hasil pull agar bisa dicopy
+        bot.send_message(message.chat.id, f"📥 <b>Git Output:</b>\n<code>{pull_output}</code>", parse_mode="HTML")
+
+        bot.send_message(message.chat.id, "♻️ <b>Restarting Bot...</b>", parse_mode="HTML")
+
+        # 2. Perintah Restart (Sesuai logic yang kamu minta)
+        # Kita bungkus dalam bash script singkat agar pkill tidak membunuh proses ini sebelum nohup jalan
+        restart_cmd = f"""
+        pkill -9 -f bot_control.py || true
+        sleep 2
+        nohup {venv_python} {bot_script} > {log_file} 2>&1 &
+        """
+        
+        subprocess.Popen(["/bin/bash", "-c", restart_cmd])
+
+    except Exception as e:
+        bot.reply_to(message, f"❌ Error Update: <code>{str(e)}</code>", parse_mode="HTML")
 print("--- BOT IS RUNNING ---")
 bot.infinity_polling()
