@@ -261,15 +261,19 @@ def handle_update(message):
 
         bot.send_message(message.chat.id, "♻️ <b>Restarting Bot...</b>", parse_mode="HTML")
 
-        # 2. Perintah Restart (Sesuai logic yang kamu minta)
-        # Kita bungkus dalam bash script singkat agar pkill tidak membunuh proses ini sebelum nohup jalan
-        restart_cmd = f"""
-        pkill -9 -f bot_control.py || true
-        sleep 2
-        nohup {venv_python} {bot_script} > {log_file} 2>&1 &
-        """
+        # 2. Perintah Restart yang Tahan Banting
+        # Kita gabungkan semua perintah dalam satu baris bash 
+        # dan jalankan dengan nohup agar tidak ikut mati saat pkill
+        restart_cmd = (
+            f"pkill -9 -f bot_control.py || true && "
+            f"sleep 2 && "
+            f"nohup {venv_python} {bot_script} > {log_file} 2>&1 &"
+        )
         
-        subprocess.Popen(["/bin/bash", "-c", restart_cmd])
+        # Gunakan shell=True dan lepaskan prosesnya (start_new_session)
+        subprocess.Popen(restart_cmd, shell=True, cwd=WORKDIR, start_new_session=True)
+        
+        bot.send_message(message.chat.id, "♻️ <b>Bot dimatikan dan akan nyala kembali...</b>", parse_mode="HTML")
 
     except Exception as e:
         bot.reply_to(message, f"❌ Error Update: <code>{str(e)}</code>", parse_mode="HTML")
