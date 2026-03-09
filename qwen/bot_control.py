@@ -4,6 +4,7 @@ import subprocess
 import os
 import requests
 import glob
+import shutil
 
 # --- Konfigurasi ---
 TOKEN = os.getenv("TELE_TOKEN")
@@ -20,38 +21,33 @@ bot = telebot.TeleBot(TOKEN)
 # --- Perintah: /last ---
 @bot.message_handler(commands=['last'])
 def send_last_images(message):
-    if message.from_user.id != ALLOWED_ID:
-        return
+    if message.from_user.id != ALLOWED_ID: return
     try:
         files = glob.glob(os.path.join(TEMP_PATH, "*.png"))
         if not files:
-            bot.send_message(message.chat.id, f"❌ Folder kosong di path:\n<code>{TEMP_PATH}</code>", parse_mode="HTML")
+            bot.reply_to(message, f"❌ Folder kosong:\n<code>{TEMP_PATH}</code>", parse_mode="HTML")
             return
 
         files.sort(key=os.path.getmtime, reverse=True)
         latest_files = files[:6]
         
-        bot.send_message(message.chat.id, f"📸 Mengirim {len(latest_files)} file terbaru...")
-
         media = []
         for i, f in enumerate(latest_files):
             photo = open(f, 'rb')
-            caption = os.path.basename(f) if i == 0 else ""
-            media.append(types.InputMediaPhoto(photo, caption=caption))
+            caption = f"<code>{os.path.basename(f)}</code>" if i == 0 else ""
+            media.append(types.InputMediaPhoto(photo, caption=caption, parse_mode="HTML"))
 
         if media:
             bot.send_media_group(message.chat.id, media)
-            for m in media:
-                m.media.close()
+            for m in media: m.media.close()
                 
     except Exception as e:
-        bot.send_message(message.chat.id, f"❌ Error detect: {str(e)}")
+        bot.reply_to(message, f"❌ Error Last: <code>{str(e)}</code>", parse_mode="HTML")
 
 # --- Perintah: /info ---
 @bot.message_handler(commands=['info'])
 def info_device(message):
-    if message.from_user.id != ALLOWED_ID:
-        return
+    if message.from_user.id != ALLOWED_ID: return
     try:
         ram = subprocess.check_output("free -h | grep Mem | awk '{print $3 \" / \" $2}'", shell=True).decode().strip()
         disk = subprocess.check_output("df -h /workspace | awk 'NR==2 {print $3 \" / \" $2 \" (\" $5 \")\"}'", shell=True).decode().strip()
@@ -59,44 +55,45 @@ def info_device(message):
             vram = subprocess.check_output("nvidia-smi --query-gpu=memory.used,memory.total --format=csv,noheader,nounits", shell=True).decode().strip()
             v_used, v_total = vram.split(',')
             vram_info = f"{int(v_used)/1024:.1f}GB / {int(v_total)/1024:.1f}GB"
-        except:
-            vram_info = "GPU Error"
-        bot.reply_to(message, f"🖥️ <b>Info:</b>\nRAM: {ram}\nVRAM: {vram_info}\nDISK: {disk}", parse_mode="HTML")
+        except: vram_info = "GPU Error"
+        
+        res = (f"🖥️ <b>System Info</b>\n\n"
+               f"RAM: <code>{ram}</code>\n"
+               f"VRAM: <code>{vram_info}</code>\n"
+               f"DISK: <code>{disk}</code>")
+        bot.reply_to(message, res, parse_mode="HTML")
     except Exception as e:
-        bot.reply_to(message, f"❌ Error Info: {e}")
+        bot.reply_to(message, f"❌ Error Info: <code>{e}</code>", parse_mode="HTML")
 
 # --- Perintah: /clean ---
 @bot.message_handler(commands=['clean'])
 def clean_temp(message):
-    if message.from_user.id != ALLOWED_ID:
-        return
+    if message.from_user.id != ALLOWED_ID: return
     os.system(f"rm -f {TEMP_PATH}/*")
     bot.reply_to(message, "🧹 Temp Cleaned!")
 
 # --- Perintah: /reboot ---
 @bot.message_handler(commands=['reboot'])
 def reboot_comfy(message):
-    if message.from_user.id != ALLOWED_ID:
-        return
+    if message.from_user.id != ALLOWED_ID: return
     try:
         requests.get("http://127.0.0.1:8188/manager/reboot", timeout=5)
         bot.reply_to(message, "🔄 Rebooting...")
     except: 
-        bot.reply_to(message, "✅ Perintah dikirim (Server mungkin sedang restart).")
+        bot.reply_to(message, "✅ Command Sent.")
 
 # --- Perintah: /run ---
 @bot.message_handler(commands=['run'])
 def handle_run(message):
-    if message.from_user.id != ALLOWED_ID:
-        return
+    if message.from_user.id != ALLOWED_ID: return
     try:
         parts = message.text.split()
         if len(parts) < 8:
-            bot.reply_to(message, "⚠️ Format: /run subj dr ur cnt n ss prf")
+            bot.reply_to(message, "⚠️ Format: <code>/run subj dr ur cnt n ss prf</code>", parse_mode="HTML")
             return
         
         subject = parts[1]
-        bot.reply_to(message, f"🚀 <b>Running {subject}...</b>", parse_mode="HTML")
+        bot.reply_to(message, f"🚀 Running: <code>{subject}</code>", parse_mode="HTML")
         
         env = os.environ.copy()
         env["COUNT"] = parts[4]
@@ -104,13 +101,12 @@ def handle_run(message):
         cmd = ["/bin/bash", "main.sh", "-s", subject, "-dr", parts[2], "-m", "image", "-ur", parts[3], "-n", parts[5], "-ss", parts[6], "-p", parts[7]]
         subprocess.Popen(cmd, cwd=WORKDIR, env=env)
     except Exception as e: 
-        bot.reply_to(message, f"❌ Error Run: {e}")
+        bot.reply_to(message, f"❌ Error Run: <code>{e}</code>", parse_mode="HTML")
 
 # --- Perintah: /count ---
 @bot.message_handler(commands=['count'])
 def count_files(message):
-    if message.from_user.id != ALLOWED_ID:
-        return
+    if message.from_user.id != ALLOWED_ID: return
     try:
         parts = message.text.split()
         if len(parts) < 2:
@@ -121,13 +117,13 @@ def count_files(message):
         base_path = f"/workspace/runpod-slim/ComfyUI/input/renamed/{subject}"
         
         if not os.path.exists(base_path):
-            bot.reply_to(message, f"❌ Folder subject tidak ditemukan:\n<code>{base_path}</code>", parse_mode="HTML")
+            bot.reply_to(message, f"❌ Folder tidak ditemukan:\n<code>{base_path}</code>", parse_mode="HTML")
             return
 
         subfolders = ["full_body", "half_body"]
         modes = ["solo", "group"]
         
-        response = f"📊 <b>File Count for: {subject}</b>\n"
+        response = f"📊 <b>Count: {subject}</b>\n"
         total_all = 0
 
         for sub in subfolders:
@@ -137,24 +133,20 @@ def count_files(message):
                 files = [f for f in glob.glob(path) if os.path.isfile(f)]
                 count = len(files)
                 total_all += count
-                
-                status_icon = "✅" if count > 0 else "⚠️"
-                response += f"  ├ {m.capitalize()}: {count} {status_icon}\n"
+                icon = "✅" if count > 0 else "⚠️"
+                response += f"  ├ {m.capitalize()}: <code>{count}</code> {icon}\n"
         
-        response += f"\nTotal Semua: <b>{total_all}</b> file."
+        response += f"\nTotal: <b>{total_all}</b> file."
         bot.reply_to(message, response, parse_mode="HTML")
-
     except Exception as e:
-        bot.reply_to(message, f"❌ Error Count: {str(e)}")
+        bot.reply_to(message, f"❌ Error Count: <code>{str(e)}</code>", parse_mode="HTML")
 
-# --- Perintah: /delete (Hapus Folder Subject) ---
+# --- Perintah: /delete ---
 @bot.message_handler(commands=['delete'])
 def delete_subject_folder(message):
-    if message.from_user.id != ALLOWED_ID:
-        return
+    if message.from_user.id != ALLOWED_ID: return
     try:
         parts = message.text.split()
-        # Format: /delete <subject>
         if len(parts) < 2:
             bot.reply_to(message, "⚠️ Format: <code>/delete subject_name</code>", parse_mode="HTML")
             return
@@ -163,118 +155,89 @@ def delete_subject_folder(message):
         target_path = f"/workspace/runpod-slim/ComfyUI/input/renamed/{subject}"
         
         if not os.path.exists(target_path):
-            bot.reply_to(message, f"❌ Folder tidak ditemukan:\n<code>{target_path}</code>", parse_mode="HTML")
+            bot.reply_to(message, f"❌ Folder tidak ada:\n<code>{target_path}</code>", parse_mode="HTML")
             return
 
-        # Eksekusi penghapusan folder dan isinya (rm -rf)
-        import shutil
         shutil.rmtree(target_path)
-        
-        bot.reply_to(message, f"🗑️ <b>Folder Deleted:</b>\n<code>{subject}</code>", parse_mode="HTML")
-
+        bot.reply_to(message, f"🗑️ Deleted: <code>{subject}</code>", parse_mode="HTML")
     except Exception as e:
-        bot.reply_to(message, f"❌ Error Delete: {str(e)}")
+        bot.reply_to(message, f"❌ Error Delete: <code>{str(e)}</code>", parse_mode="HTML")
 
-# --- Perintah: /list (Daftar Folder Subject) ---
+# --- Perintah: /list ---
 @bot.message_handler(commands=['list'])
 def list_subjects(message):
-    if message.from_user.id != ALLOWED_ID:
-        return
+    if message.from_user.id != ALLOWED_ID: return
     try:
         base_path = "/workspace/runpod-slim/ComfyUI/input/renamed"
-        
         if not os.path.exists(base_path):
-            bot.reply_to(message, "❌ Direktori utama tidak ditemukan.", parse_mode="HTML")
+            bot.reply_to(message, "❌ Path tidak ditemukan.", parse_mode="HTML")
             return
 
-        # Ambil daftar folder saja (abaikan file)
         subjects = [f for f in os.listdir(base_path) if os.path.isdir(os.path.join(base_path, f))]
-        
         if not subjects:
-            bot.reply_to(message, "📂 <b>Direktori Kosong</b>", parse_mode="HTML")
+            bot.reply_to(message, "📂 Folder Kosong.")
             return
 
-        # Urutkan secara alfabet
         subjects.sort()
-        
         response = "📂 <b>Daftar Subject:</b>\n\n"
         for i, sub in enumerate(subjects, 1):
+            # Klik pada nama folder untuk copy otomatis
             response += f"{i}. <code>{sub}</code>\n"
             
         bot.reply_to(message, response, parse_mode="HTML")
-
     except Exception as e:
-        bot.reply_to(message, f"❌ Error List: {str(e)}")
+        bot.reply_to(message, f"❌ Error List: <code>{str(e)}</code>", parse_mode="HTML")
 
+# --- Perintah: /install ---
 @bot.message_handler(commands=['install'])
 def handle_install(message):
     if message.from_user.id != ALLOWED_ID: return
-    
     try:
         parts = message.text.split()
         if len(parts) < 2:
-            bot.reply_to(message, "⚠️ Format: /install <HF_TOKEN> [TELE_TOKEN] [TELE_ID]")
+            bot.reply_to(message, "⚠️ Format: <code>/install HF_TOKEN [TELE_TOKEN] [ID]</code>", parse_mode="HTML")
             return
         
         hf_token = parts[1]
         tele_token = parts[2] if len(parts) > 2 else TOKEN
         tele_id = parts[3] if len(parts) > 3 else str(message.from_user.id)
         
-        # Path absolut agar tidak nyasar
         wrapper_path = "/workspace/comfyui-esddin/run_ins.sh"
         log_path = "/workspace/comfyui-esddin/qwen/install_debug.log"
         
-        # Pastikan file script ada sebelum dijalankan
         if not os.path.exists(wrapper_path):
-            bot.reply_to(message, f"❌ Script tidak ditemukan di:\n<code>{wrapper_path}</code>", parse_mode="HTML")
+            bot.reply_to(message, f"❌ File tidak ada:\n<code>{wrapper_path}</code>", parse_mode="HTML")
             return
 
-        bot.reply_to(message, f"⚙️ <b>Memulai Instalasi...</b>\n\nLog: <code>qwen/install_debug.log</code>", parse_mode="HTML")
-
-        # Panggil wrapper script dengan path absolut
+        bot.reply_to(message, "⚙️ <b>Installing...</b>\nCek log: <code>/log install_debug.log</code>", parse_mode="HTML")
         cmd = ["bash", wrapper_path, hf_token, tele_token, tele_id]
-        
-        # Jalankan di background, log ditaruh di folder qwen
         with open(log_path, "a") as f_log:
-            # Tetap gunakan WORKDIR (folder qwen) sebagai tempat eksekusi
             subprocess.Popen(cmd, cwd=WORKDIR, stdout=f_log, stderr=f_log)
-            
     except Exception as e:
-        bot.reply_to(message, f"❌ Error: {e}")
+        bot.reply_to(message, f"❌ Error Install: <code>{e}</code>", parse_mode="HTML")
 
-# --- [Command: /log] ---
+# --- Perintah: /log ---
 @bot.message_handler(commands=['log'])
 def send_tail_log(message):
-    if message.from_user.id != ALLOWED_ID:
-        return
-    
+    if message.from_user.id != ALLOWED_ID: return
     try:
         parts = message.text.split()
-        # Jika tidak ada nama file, default ke bot.log
         filename = parts[1] if len(parts) > 1 else "bot.log"
         log_path = os.path.join(WORKDIR, filename)
 
         if not os.path.exists(log_path):
-            bot.reply_to(message, f"❌ File log tidak ditemukan:\n<code>{log_path}</code>", parse_mode="HTML")
+            bot.reply_to(message, f"❌ Not found: <code>{filename}</code>", parse_mode="HTML")
             return
 
-        # Mengambil 15 baris terakhir menggunakan perintah 'tail'
         tail_output = subprocess.check_output(["tail", "-n", "15", log_path]).decode('utf-8')
-        
         if not tail_output.strip():
-            bot.reply_to(message, f"⚪ File <code>{filename}</code> masih kosong.", parse_mode="HTML")
+            bot.reply_to(message, "⚪ Log kosong.")
             return
 
-        msg = f"📝 <b>Last 15 lines of {filename}:</b>\n\n<pre>{tail_output}</pre>"
-        
-        # Jika pesan terlalu panjang untuk Telegram (max 4096 char), kita potong
-        if len(msg) > 4000:
-            msg = msg[:4000] + "...(truncated)"
-            
-        bot.reply_to(message, msg, parse_mode="HTML")
-
+        msg = f"📝 <b>Log: {filename}</b>\n<pre>{tail_output}</pre>"
+        bot.reply_to(message, msg if len(msg) < 4000 else msg[:4000], parse_mode="HTML")
     except Exception as e:
-        bot.reply_to(message, f"❌ Error reading log: {str(e)}")
+        bot.reply_to(message, f"❌ Error Log: <code>{str(e)}</code>", parse_mode="HTML")
         
 print("--- BOT IS RUNNING ---")
 bot.infinity_polling()
