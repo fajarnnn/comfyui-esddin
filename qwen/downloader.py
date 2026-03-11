@@ -10,6 +10,7 @@ parser = argparse.ArgumentParser(description="HF Downloader")
 parser.add_argument("--repo", type=str, choices=["gm", "nt", "jp"], required=True)
 # Pakai --prefix untuk milih folder (qwen/final/raw)
 parser.add_argument("--prefix", type=str, default="qwen")
+parser.add_argument("--sub", type=str, default="")
 args = parser.parse_args()
 
 # ================= CONFIG & MAPPING =================
@@ -28,9 +29,8 @@ FTP_MODE = (os.getenv("FTP") or "image").lower().strip()
 REPO_ID = REPO_CONFIG[args.repo]["repo"]
 token_env_name = REPO_CONFIG[args.repo]["token"]
 HTOK = os.getenv(token_env_name)
-
 # Prefix dinamis dari Args + Env Subject
-PREFIX = f"{args.prefix}/{SBJ}"
+PREFIX = f"{args.prefix}/{SBJ}/{args.sub}"
 MAX_WORKERS = 8
 
 # Mapping ekstensi berdasarkan FTP mode
