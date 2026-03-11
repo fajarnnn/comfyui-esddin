@@ -88,18 +88,37 @@ def handle_run(message):
     if message.from_user.id != ALLOWED_ID: return
     try:
         parts = message.text.split()
+        # Minimal 8 bagian (cmd + 7 args). Argumen ke-9 (sub) bersifat opsional.
         if len(parts) < 8:
-            bot.reply_to(message, "⚠️ Format: <code>/run subj dr ur cnt n ss prf</code>", parse_mode="HTML")
+            bot.reply_to(message, "⚠️ Format: <code>/run subj dr ur cnt n ss prf [sub]</code>", parse_mode="HTML")
             return
         
         subject = parts[1]
-        bot.reply_to(message, f"🚀 Running: <code>{subject}</code>", parse_mode="HTML")
+        # Jika parts[8] ada, gunakan itu sebagai sub. Jika tidak, pakai empty string.
+        sub_val = parts[8] if len(parts) > 8 else ""
+        
+        bot.reply_to(message, f"🚀 Running: <code>{subject}</code>\nSub: <code>{sub_val if sub_val else '(empty)'}</code>", parse_mode="HTML")
         
         env = os.environ.copy()
         env["COUNT"] = parts[4]
+        # Masukkan juga ke env jika script main.sh membutuhkannya via env var
+        env["sub"] = sub_val 
         
-        cmd = ["/bin/bash", "main.sh", "-s", subject, "-dr", parts[2], "-m", "image", "-ur", parts[3], "-n", parts[5], "-ss", parts[6], "-p", parts[7]]
+        # Tambahkan flag -sub ke dalam command
+        cmd = [
+            "/bin/bash", "main.sh", 
+            "-s", subject, 
+            "-dr", parts[2], 
+            "-m", "image", 
+            "-ur", parts[3], 
+            "-n", parts[5], 
+            "-ss", parts[6], 
+            "-p", parts[7],
+            "-sub", sub_val  # Mengirim nilai sub (bisa kosong "")
+        ]
+        
         subprocess.Popen(cmd, cwd=WORKDIR, env=env)
+        
     except Exception as e: 
         bot.reply_to(message, f"❌ Error Run: <code>{e}</code>", parse_mode="HTML")
 
