@@ -321,19 +321,19 @@ def handle_printrun(message):
         
         # 1. Full Body -> Solo
         res += f"<b>Full Body - Solo ({fb_solo})</b>\n"
-        res += f"<code>/run {subject} nt nt {fb_solo} true true 100000</code>\n\n"
+        res += f"<code>/run {subject} nt nt {fb_solo} true true 100000 full_body</code>\n\n"
         
         # 2. Full Body -> Group
         res += f"<b>Full Body - Group ({fb_group})</b>\n"
-        res += f"<code>/run {subject} nt nt {fb_group} true false 200000</code>\n\n"
+        res += f"<code>/run {subject} nt nt {fb_group} true false 200000 full_body</code>\n\n"
         
         # 3. Half Body - Solo
         res += f"<b>Half Body - Solo ({hb_solo})</b>\n"
-        res += f"<code>/run {subject} nt nt {hb_solo} false true 300000</code>\n\n"
+        res += f"<code>/run {subject} nt nt {hb_solo} false true 300000 half_body</code>\n\n"
         
         # 4. Half Body - Group
         res += f"<b>Half Body - Group ({hb_group})</b>\n"
-        res += f"<code>/run {subject} nt nt {hb_group} false false 400000</code>"
+        res += f"<code>/run {subject} nt nt {hb_group} false false 400000 half_body</code>"
 
         bot.reply_to(message, res, parse_mode="HTML")
 
